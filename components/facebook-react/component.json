@@ -1,0 +1,17 @@
+{
+  "name": "react",
+  "repo": "facebook/react",
+  "description": "facebook react",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    
+  },
+  "development": {},
+  "license": "MIT",
+  "main": "react-with-addons.js",
+  "scripts": [
+    "react-with-addons.js"
+  ],
+  "remotes": []
+}

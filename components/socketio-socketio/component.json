@@ -1,0 +1,12 @@
+{
+  "name": "socketio",
+  "repo": "socketio/socketio",
+  "description": "socket io",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {},
+  "development": {},
+  "license": "MIT",
+  "main": "socket.io.js",
+  "scripts": ["socket.io.js"]
+}

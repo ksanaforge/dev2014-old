@@ -1,0 +1,22 @@
+{
+  "name": "bootstrap",
+  "repo": "brighthas/bootstrap",
+  "description": "bootstrap 3",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    "component/jquery": "*"
+  },
+  "development": {},
+  "scripts": [
+    "dist/js/bootstrap.js"
+  ],
+  "main": "dist/js/bootstrap.js",
+  "files": [
+    
+  ],
+  "styles": [
+    "dist/bootstrap.css"
+  ],
+  "license": "MIT"
+}
