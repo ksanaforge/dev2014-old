@@ -40,16 +40,28 @@ gulp.task('clonerepos',function() {
 });
 
 gulp.task('install-socket.io-cli',function() {
-	gulp.src('node_modules/socket.io/node_modules/socket.io-client/dist/*')
+	return gulp.src('node_modules/socket.io/node_modules/socket.io-client/dist/*')
   .pipe(gulp.dest('components/socketio-socketio/'));
   
 })
 gulp.task('component-install',function(){
 	exec('component install');
 })
-gulp.task('setup', ['install-socket.io-cli','component-install']);
-//grunt.registerTask('setup',['install-node-webkit','clone','shell:component-install','copy:socketio-cli','welcome'])
+gulp.task('install', ['install-node-webkit','install-socket.io-cli','component-install']);
 
+gulp.task('sampleapp', function(){
+	var sample=spawn('git', ["clone","https://github.com/dhammagear/sampleapp"]);
+	sample.on("exit",function(){
+		console.log("sample downloaded, type to run the sample");
+		console.log(">cd sampleapp");
+    console.log(">gulp");
+	});
+});
+
+gulp.task('setup',['install'],function(){
+    console.log("to create demo app, type");
+    console.log(">gulp sampleapp");
+});
 
 var newapp=require('./node_scripts/newapp');
 var newcomponent=require('./node_scripts/newcomponent');
