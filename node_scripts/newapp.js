@@ -46,10 +46,10 @@ module.exports=function(appname){
 						'<head>\n'+
 						'<meta charset="utf-8" />\n'+
 						'<script src="../nodemain.js"></script>\n'+
-						'<script src="build/build.js"></script>\n'+
 						'<link type="text/css" rel="stylesheet" href="build/build.css">\n'+
 						'</head>\n'+
 						'<div id="main"></div>\n'+
+						'<script src="build/build.js"></script>\n'+
 						'<script src="index.js"></script>\n'+
 						'</html>';
 	var packagejson='{\n'+
@@ -59,7 +59,7 @@ module.exports=function(appname){
 						'  "main": "index.html",\n'+
 						'  "single-instance":true,\n'+
 						'  "window": {\n'+
-						'    "toolbar": false,\n'+
+						'    "toolbar": true,\n'+
 						'    "width": 1060,\n'+
 						'    "height": 700\n'+
 						'  },\n'+
@@ -107,7 +107,7 @@ module.exports=function(appname){
 	fs.writeFileSync(appname+'/package.json',packagejson,'utf8');
 	fs.writeFileSync(appname+'/index.css',indexcss,'utf8');
 	fs.writeFileSync(appname+'/index.html',indexhtml,'utf8');
-	fs.writeFileSync(appname+'/chrome_main.js',indexhtml,'utf8'); //for chrome app
-	fs.writeFileSync(appname+'/manifest.json',indexhtml,'utf8'); //for chrome app
+//	fs.writeFileSync(appname+'/chrome_main.js',indexhtml,'utf8'); //for chrome app
+	fs.writeFileSync(appname+'/manifest.json',manifestjson,'utf8'); //for chrome app
 	fs.mkdirSync(appname+'/components');
 }

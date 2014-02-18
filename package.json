@@ -6,13 +6,16 @@
     "gulp": "*",
     "gulp-react": "*",
     "gulp-jshint": "*",
-    "gulp-concat": "*",
+    "gulp-concat": "~2.1.7",
     "gulp-uglify": "*",
     "gulp-rename": "*",
     "unzip": "~0.1.9",
     "fstream": "~0.1.25",
     "gulp-clean": "~0.2.4",
-    "minimist": "0.0.7"
+    "minimist": "0.0.7",
+    "gulp-filelog": "~0.2.0",
+    "gulp-tap": "~0.1.1",
+    "gulp-component": "~0.1.5"
   },
   "dependencies": {
     "adm-zip": "*",
