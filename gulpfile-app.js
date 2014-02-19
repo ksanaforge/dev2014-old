@@ -76,6 +76,15 @@ gulp.task('server',function(){
   console.log(("http://127.0.0.1:2556/"+appfolder));
 });
 
+gulp.task('mkzip',function(){
+  var mkzip=require('./node_scripts/mkzip');
+  console.log('mkzip',mkzip)
+})
+
+gulp.task('qunit',function(){
+  
+})
+
 gulp.task('default',['rebuild','run','watch'])
 
 module.exports=gulp;

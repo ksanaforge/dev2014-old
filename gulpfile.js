@@ -73,7 +73,7 @@ gulp.task('newapp',function(){
   newcomponent(name+'/main');
   newcomponent(name+'/comp1'); //need at least 2 component for gulp to work properly
   process.chdir('..');
-  console.log('success, switch to app folder and type')
-  console.log('grunt run')
+  console.log('success, cd to '+name+' and type')
+  console.log('gulp')
 });
 
