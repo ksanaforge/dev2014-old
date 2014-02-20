@@ -74,22 +74,19 @@ gulp.task('server',function(){
     appprocessexit();
   });
   var appfolder=process.cwd().match(/[\/\\]([^\/\\]*?)$/)[1];
-  console.log("your application can be access from ");
+  console.log("your application can be accessed from ");
   console.log(("http://127.0.0.1:2556/"+appfolder));
 });
 
 gulp.task('min',['rebuild'],function(){
-  gulp.src('build/build.js').pipe(uglify()).
+  return;
+  return gulp.src('build/build.js').pipe(uglify()).
   pipe(rename('build.min.js')).pipe(gulp.dest('build'));
 })
 gulp.task('mkzip',['min'],function(){
   var mkzip=require('./node_scripts/mkzip');
-  console.log('mkzip',mkzip)
-  /*
-  app files with nw files
-  min build/build.js and move to same folder.
-  only sub folder is node_modules 
-  */
+  var appname=process.cwd();
+  mkzip(appname);
 })
 
 
