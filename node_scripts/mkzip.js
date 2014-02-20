@@ -71,7 +71,6 @@ var indexhtml='<html>\n<head>\n<meta charset="utf-8" />\n'+
 						'<link type="text/css" rel="stylesheet" href="build.css"></head>\n'+
 						'<div id="main"></div>\n'+
 						'<script src="build.min.js"></script>\n'+
-						'<script src="index.js"></script>\n'+
 						'</html>';
 var add_appfiles=function(appfolder,zip) {
 	zip.addData("index.html",indexhtml);

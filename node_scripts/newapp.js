@@ -50,7 +50,6 @@ module.exports=function(appname){
 						'</head>\n'+
 						'<div id="main"></div>\n'+
 						'<script src="build/build.js"></script>\n'+
-						'<script src="index.js"></script>\n'+
 						'</html>';
 	var packagejson='{\n'+
 						'  "name": "'+appname+'",\n'+
