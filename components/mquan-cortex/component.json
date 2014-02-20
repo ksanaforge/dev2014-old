@@ -1,0 +1,17 @@
+{
+  "name": "cortex",
+  "repo": "mquan/cortex",
+  "description": "cortex for react",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    
+  },
+  "development": {},
+  "license": "MIT",
+  "main": "cortex.js",
+  "scripts": [
+    "cortex.js"
+  ],
+  "remotes": []
+}

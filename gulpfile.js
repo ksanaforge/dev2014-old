@@ -1,5 +1,6 @@
 // settings
 var nw=require('./node_scripts/gulp-nw');
+var extras=require('./node_scripts/gulp-extras');
 var repos=require('./node_scripts/repos');
 
 //third party
@@ -18,6 +19,20 @@ var outback = function (s) {
     for (var i = 0; i < l; i++) s += String.fromCharCode(8);
     process.stdout.write(s);
 }
+
+gulp.task('install-extras',function() {
+	extras.map(function(E){
+		var writeStream = fstream.Writer(E.path);
+		var datalength=0;
+		var request = https.get(E.url, function(response) {
+			response.on('data',function(chunk){
+				datalength+=chunk.length;
+			})
+			.pipe(writeStream);
+		});		
+	});
+});
+
 gulp.task('install-node-webkit', function() {
 	if (!fs.existsSync(nw.path)) fs.mkdirSync(nw.path);
 	var writeStream = fstream.Writer(nw.path);
@@ -47,7 +62,7 @@ gulp.task('install-socket.io-cli',function() {
 gulp.task('component-install',function(){
 	exec('component install');
 })
-gulp.task('install', ['install-node-webkit','install-socket.io-cli','component-install']);
+gulp.task('install', ['install-node-webkit','install-socket.io-cli','component-install','install-extras']);
 
 gulp.task('sampleapp', function(){
 	var sample=spawn('git', ["clone","https://github.com/dhammagear/sampleapp"]);

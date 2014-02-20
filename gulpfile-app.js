@@ -32,7 +32,6 @@ gulp.task('jsx2js',function() {
   		.pipe(tap(function(file, t) {
         if (file.path.substring(file.path.length-4) == '.jsx') {
             var jsfile=file.path.substring(0,file.path.length-1);
-            console.log(jsfile)
         		tempjs.push(jsfile);
             return t.through(react, []);
         }

@@ -9,12 +9,14 @@ if (typeof process !="undefined") {
 }
 
 var React=require('../react');
+require("../cortex");
 var Require=function(arg){return require("../"+arg)};
 var boot=function(appId,main,maindiv) {
 	main=main||"main";
 	maindiv=maindiv||"main";
-	ksana.appId=appId
-	React.renderComponent(Require(main)(),document.getElementById(maindiv));	
+	ksana.appId=appId;
+
+	ksana.mainComponent=React.renderComponent(Require(main)(),document.getElementById(maindiv));	
 }
 window.React=React;
 window.ksana=ksana;

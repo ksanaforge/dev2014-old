@@ -33,7 +33,7 @@ module.exports=function(appname){
 '  },\n'+
 '  "development": {},\n'+
 '  "paths": ["components","../components","../node_modules/"],\n'+
-'  "local": ["facebook/react"],\n'+
+'  "local": ["facebook/react","mquan/cortex"],\n'+
 '  "license": "MIT",\n'+
 '  "main": "index.js",\n'+
 '  "scripts": ["index.js"],\n'+
