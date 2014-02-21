@@ -78,7 +78,6 @@ gulp.task('server',function(){
 });
 
 gulp.task('min',['rebuild'],function(){
-  return;
   return gulp.src('build/build.js').pipe(uglify()).
   pipe(rename('build.min.js')).pipe(gulp.dest('build'));
 })

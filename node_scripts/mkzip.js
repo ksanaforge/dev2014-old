@@ -80,7 +80,7 @@ var add_appfiles=function(appfolder,zip) {
 	addfile(appfolder+"/build/build.css",true);
 
 	if (fs.existsSync(appfolder+"/mkzip.json")){
-		var deploy=require(appfolder+"/mkzip.json");
+		var deploy=require("../"+appfolder+"/mkzip.json");
 		if (deploy.files) addtozip(deploy.files , true);
 		//array of node modules 
 		//['node_modules/yadb','node_modules/yase']
