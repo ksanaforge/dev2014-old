@@ -34,6 +34,11 @@ gulp.task('install-extras',function() {
 });
 
 gulp.task('install-node-webkit', function() {
+	var parent=nw.path.split('/');
+	parent.pop();
+	var parentfolder=parent.join('/');
+
+	if (!fs.existsSync(parentfolder)) fs.mkdirSync(parentfolder);
 	if (!fs.existsSync(nw.path)) fs.mkdirSync(nw.path);
 	var writeStream = fstream.Writer(nw.path);
 	var datalength=0;

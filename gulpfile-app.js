@@ -58,7 +58,7 @@ var appprocessexit=function() {
   process.exit(1);
 }
 
-gulp.task('run',function(){
+gulp.task('run',['rebuild'],function(){
   var instance=spawn(nw.bin,['--remote-debugging-port=9222','.'])
   instance.on('exit',function(){
     appprocessexit();
@@ -89,6 +89,6 @@ gulp.task('mkzip',['min'],function(){
 })
 
 
-gulp.task('default',['rebuild','run','watch'])
+gulp.task('default',['run','watch'])
 
 module.exports=gulp;
