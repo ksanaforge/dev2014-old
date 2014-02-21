@@ -70,6 +70,7 @@ var addtozip=function(files,addtoroot) {
 var indexhtml='<html>\n<head>\n<meta charset="utf-8" />\n'+
 						'<link type="text/css" rel="stylesheet" href="build.css"></head>\n'+
 						'<div id="main"></div>\n'+
+						'<script>window.nodeRequire=require;</script>\n'+
 						'<script src="build.min.js"></script>\n'+
 						'</html>';
 var add_appfiles=function(appfolder,zip) {
