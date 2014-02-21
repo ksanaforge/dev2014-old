@@ -49,6 +49,7 @@ gulp.task('install-node-webkit', function() {
 
 gulp.task('clonerepos',function() {
 	for (var i in repos) {
+		console.log('clone ',repos[i].url)
 		gulp.src(repos[i].target,{read:false}).pipe(clean());
 		spawn('git', ["clone",repos[i].url,repos[i].target]);
 	}
@@ -62,7 +63,7 @@ gulp.task('install-socket.io-cli',function() {
 gulp.task('component-install',function(){
 	exec('component install');
 })
-gulp.task('install', ['install-node-webkit','install-socket.io-cli','component-install','install-extras']);
+gulp.task('install', ['clonerepos','install-node-webkit','install-socket.io-cli','component-install','install-extras']);
 
 gulp.task('sampleapp', function(){
 	var sample=spawn('git', ["clone","https://github.com/dhammagear/sampleapp"]);

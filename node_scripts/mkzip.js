@@ -81,12 +81,13 @@ var add_appfiles=function(appfolder,zip) {
 
 	if (fs.existsSync(appfolder+"/mkzip.json")){
 		var deploy=require(appfolder+"/mkzip.json");
-		addtozip(deploy.files , true);
+		if (deploy.files) addtozip(deploy.files , true);
+		//array of node modules 
+		//['node_modules/yadb','node_modules/yase']
+		if (deploy.repos) addtozip(deploy.repos);
 	} 
 }
-var add_node_modules=function() {
-	addtozip(['node_modules/yadb','node_modules/yase']);
-}
+
 var add_node_webkit=function() {
 	addtozip(['node_webkit/'+nwpath[platform]],true);
 	
@@ -105,7 +106,6 @@ var mkzip=function(appfolder) {
 //	var shellscriptname='start-'+appname + shellscript[platform];
 	//create 
 	process.chdir("..");
-	add_node_modules();
 	add_appfiles(appname,zip);
 	add_node_webkit();
 
