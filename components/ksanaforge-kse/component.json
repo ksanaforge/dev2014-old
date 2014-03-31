@@ -1,0 +1,12 @@
+{
+  "name": "kse",
+  "repo": "ksanaforge/kse",
+  "description": "hello world",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {},
+  "development": {},
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": ["index.js","rpc.js","rpc_yase.js","yase.js","yase_promise.js"]
+}
