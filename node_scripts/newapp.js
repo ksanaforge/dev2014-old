@@ -27,7 +27,7 @@ module.exports=function(appname){
 '  "version": "0.0.1",\n'+
 '  "keywords": [],\n'+
 '  "dependencies": {\n'+
-'    "dhammagear/boot": "*",\n'+
+'    "ksanaforge/boot": "*",\n'+
 '    "brighthas/bootstrap": "*",\n'+
 '    "component/jquery": "*"\n'+
 '  },\n'+
