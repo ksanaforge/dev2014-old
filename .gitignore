@@ -1,6 +1,7 @@
 node_webkit
 node_modules
-components
+components/component-jquery
+components/socketio-socketio
 test
 *.zip
 dege-kangyur-tbrc

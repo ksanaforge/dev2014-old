@@ -1,0 +1,45 @@
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+*:focus {
+    outline: none;
+}
+.surface {font-size:200%;-webkit-user-select:text;font-family: "微軟正黑體", "Microsoft JhengHei", "新細明體", "PMingLiU", "細明體", "MingLiU", "標楷體", "DFKai-sb", serif;}
+.surface-caret-container {position:relative;width:6px;}
+.surface-inputbox {position:absolute;left:0;right:0;}
+.surface-caret {position:relative;background-color:gray;height:100%;
+	  -webkit-animation: fadein 0.75s ease-in alternate infinite;
+}
+.selected {background: #52B7FD;}
+@-webkit-keyframes rainbow {
+  0% {border-color: hsl(0, 100%, 50%);}
+  100% {border-color: hsl(255, 100%, 50%);}
+}
+ 
+.br { white-space: pre;}
+.br::after { content:"\A"}
+.verb { background-image: url('../../svg/underline.svg');}
+.noun { background-image: url('../../svg/yellowcircle.svg');}
+.abstract { background-image: url('../../svg/silvercircle.svg');}
+.noun_verb { background-image: url('../../svg/underline.svg'),url('../../svg/yellowcircle.svg')}
+.abstract_noun_verb { background-image: url('../../svg/silvercircle.svg'),url('../../svg/underline.svg'),url('../../svg/yellowcircle.svg')}
+.abstract_verb { background-image: url('../../svg/silvercircle.svg'),url('../../svg/underline.svg')}
+.abstract_noun { background-image: url('../../svg/silvercircle.svg'),url('../../svg/yellowcircle.svg')}
+
+.comma { background-image: url('../../svg/comma.svg');}
+.fullstop { background-image: url('../../svg/fullstop.svg');}
+.delete { 
+	background-image: url('../../svg/redstrikeout.svg');
+} 
+.inserttext {
+	background-image: url('../../svg/overline.svg');
+}
+.replacetext {
+	background-image: url('../../svg/overline.svg');
+}
+.replace{
+	background-image: url('../../svg/redstrikeout.svg');
+}
+
+.link { cursor: pointer; background-image: url('../../svg/underline.svg');}
