@@ -42,13 +42,14 @@ gulp.task('jsx2js',function() {
 });
 
 gulp.task('jsx2js_common',function() {
+
     gulp.src(paths.buildscripts_common)
     .pipe(tap(function(file, t) {
         if (path.extname(file.path) === '.jsx') {
             tempjs.push(file.path.substring(0,file.path.length-1));
         }
     }))
-
+//cannot use tap to invoke react, spent 2 hours to figure out
     return gulp.src(paths.buildscripts_common).
     pipe(react()).pipe(gulp.dest("../components"));
 });
