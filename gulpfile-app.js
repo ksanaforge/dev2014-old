@@ -4,12 +4,15 @@
 var newcomponent=require('./node_scripts/newcomponent');
 var nw=require('./node_scripts/gulp-nw');
 var paths = {
-  buildscripts: [
-  'components/**/*.{jsx,js}',
-  '!build/*.js']
+  buildscripts: ['components/**/*.jsx'],
+  buildscripts_common: ['../components/**/*.jsx']
 };
+
+paths.buildscripts_all=["components/**/*.jsx","../components/**/*.jsx"];
+
 var tempjs=[];
 var fs=require('fs')
+var path=require('path')
 var gulp=require('gulp');
 var spawn=require('child_process').spawn;
 var react = require('gulp-react');
@@ -26,20 +29,31 @@ gulp.task('newcomponent',function(){
   newcomponent(name);
 });
 
-
 gulp.task('jsx2js',function() {
-		return gulp.src(paths.buildscripts)
-  		.pipe(tap(function(file, t) {
-        if (file.path.substring(file.path.length-4) == '.jsx') {
-            var jsfile=file.path.substring(0,file.path.length-1);
-        		tempjs.push(jsfile);
-            return t.through(react, []);
+    gulp.src(paths.buildscripts)
+    .pipe(tap(function(file, t) {
+        if (path.extname(file.path) === '.jsx') {
+            tempjs.push(file.path.substring(0,file.path.length-1));
         }
-    		}))
-			.pipe(gulp.dest("components"));
+    }))
+
+    return gulp.src(paths.buildscripts).
+    pipe(react()).pipe(gulp.dest("components"));
 });
 
-gulp.task('componentbuild',['jsx2js'],function() {	
+gulp.task('jsx2js_common',function() {
+    gulp.src(paths.buildscripts_common)
+    .pipe(tap(function(file, t) {
+        if (path.extname(file.path) === '.jsx') {
+            tempjs.push(file.path.substring(0,file.path.length-1));
+        }
+    }))
+
+    return gulp.src(paths.buildscripts_common).
+    pipe(react()).pipe(gulp.dest("../components"));
+});
+
+gulp.task('componentbuild',['jsx2js','jsx2js_common'],function() {
   return gulp.src('./component.json')
   .pipe(component({standalone: true}))
   .pipe(gulp.dest('./build'));
@@ -52,12 +66,13 @@ gulp.task('rebuild',['componentbuild'],function(){
   var buildjs=buildjs.replace("'use strict';","// 'use strict'; // socketio is not strict safe");
   fs.writeFileSync('./build/build.js',buildjs,'utf8')
 
-	tempjs.map(function(f){fs.unlink(f)});
+  tempjs.map(function(f){fs.unlink(f)});
   tempjs.length=0;
+
 	return true;
 })
 gulp.task('watch', function () {
-  gulp.watch(paths.buildscripts, ['rebuild']);
+  gulp.watch(paths.buildscripts_all, ['rebuild']);
 });
 
 var appprocessexit=function() {
