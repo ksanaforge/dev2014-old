@@ -8,7 +8,14 @@ var paths = {
   buildscripts_common: ['../components/**/*.jsx']
 };
 
-paths.buildscripts_all=["components/**/*.jsx","../components/**/*.jsx"];
+paths.buildscripts_all=[
+"components/**/*.jsx",
+"components/**/*.js",
+"!components/**/index.js",
+"../components/**/*.jsx",
+"../components/**/*.js",
+"!../components/**/index.js"
+];
 
 var tempjs=[];
 var fs=require('fs')

@@ -12,6 +12,6 @@
   "development": {},
   "license": "MIT",
   "main": "index.js",
-  "scripts": ["index.js"],
+  "scripts": ["index.js","cssgen.js"],
   "styles": ["index.css"]
 }

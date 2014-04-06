@@ -48,6 +48,7 @@ var surface = React.createClass({
     if (!page) return [];
     var I=page.inscription;
     var xml=[];
+    var tagset={};//tags used in the page, comma to seperate overlap tag 
     var selstart=opts.selstart||0,sellength=opts.sellength||0;
     
     for (var i=0;i<I.length;i++) {
@@ -80,30 +81,35 @@ var surface = React.createClass({
       }
 
       markupclasses.sort();
+      if (markupclasses.length) tagset[markupclasses.join(",")]=true;
       var ch=I[i];
       if (ch==="\n") {ch="\u21a9";extraclass+=' br';}
-      classes=(extraclass+" "+markupclasses.join("_")).trim();
+      classes=(extraclass+" "+markupclasses.join("__")).trim();
       xml.push(<token key={i} cls={classes} n={i} ch={ch} replaceto={replaceto}></token>);
     }
     xml.push(<token key={I.length} n={I.length}/>);
+
+    if (this.props.onTagSet) {
+      this.props.onTagSet(Object.keys(tagset),this.state.uuid);
+    }
     return xml;
   },  
   render: function() {
     var opts={selstart:this.props.selstart, sellength:this.props.sellength};
-    var xml=this.toXML(this.props.page,opts);
+    var xml=this.toXML(this.props.page,opts);    
     return (
-      <div className="surface">
-            <div ref="surface" tabIndex="0" onMouseUp={this.mouseup}>{xml}</div>
+      <div  data-id={this.state.uuid} className="surface">
+          <div ref="surface" tabIndex="0" onMouseUp={this.mouseup}>{xml}</div>
       </div>
     );
   },
-  initSurface:function() {
+  getInitialState:function() {
+    return {uuid:'u'+Math.random().toString().substring(2)};
   },
   componentDidMount:function() {
-    this.initSurface();
+   
   },
   componentDidUpdate:function() {
-    this.initSurface();
     if (this.props.scrollto) this.scrollToSelection();
   }
 });

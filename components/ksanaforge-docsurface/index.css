@@ -19,13 +19,6 @@
  
 .br { white-space: pre;}
 .br::after { content:"\A"}
-.verb { background-image: url('../../svg/underline.svg');}
-.noun { background-image: url('../../svg/yellowcircle.svg');}
-.abstract { background-image: url('../../svg/silvercircle.svg');}
-.noun_verb { background-image: url('../../svg/underline.svg'),url('../../svg/yellowcircle.svg')}
-.abstract_noun_verb { background-image: url('../../svg/silvercircle.svg'),url('../../svg/underline.svg'),url('../../svg/yellowcircle.svg')}
-.abstract_verb { background-image: url('../../svg/silvercircle.svg'),url('../../svg/underline.svg')}
-.abstract_noun { background-image: url('../../svg/silvercircle.svg'),url('../../svg/yellowcircle.svg')}
 
 .comma { background-image: url('../../svg/comma.svg');}
 .fullstop { background-image: url('../../svg/fullstop.svg');}
