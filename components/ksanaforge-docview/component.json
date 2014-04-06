@@ -4,7 +4,11 @@
   "description": "hello world",
   "version": "0.0.1",
   "keywords": [],
-  "dependencies": {},
+  "dependencies": {
+    "ksanaforge/docsurface": "*",
+    "brighthas/bootstrap":"*",
+    "component/jquery":"*"
+    },
   "development": {},
   "license": "MIT",
   "main": "index.js",

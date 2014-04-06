@@ -1,8 +1,8 @@
 /** @jsx React.DOM */
 var kdoc=Require('ksana-document').document;
-var surface=Require("docsurface"); 
-var $=Require("jquery");
-var bootstrap=Require("bootstrap");
+var surface=require("docsurface"); 
+var $=require("jquery");
+var bootstrap=require("bootstrap");
 //var othercomponent=Require("other"); 
 var docview = React.createClass({
   getInitialState: function() { 
@@ -43,7 +43,11 @@ var docview = React.createClass({
       }
       this.refs.menu.onPopup(context);
     }
-    $(this.refs.menu.getDOMNode()).css({left:x,top:y}).addClass("open");
+    if (len) {
+      $(this.refs.menu.getDOMNode()).css({left:x,top:y}).addClass("open");
+      console.log("popup");
+    }
+    
   },
   createPage:function() {
     this.setState({page:this.state.D.createPage(this.props.doc.text)});
