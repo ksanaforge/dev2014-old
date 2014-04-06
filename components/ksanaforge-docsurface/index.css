@@ -19,20 +19,3 @@
  
 .br { white-space: pre;}
 .br::after { content:"\A"}
-
-.comma { background-image: url('../../svg/comma.svg');}
-.fullstop { background-image: url('../../svg/fullstop.svg');}
-.delete { 
-	background-image: url('../../svg/redstrikeout.svg');
-} 
-.inserttext {
-	background-image: url('../../svg/overline.svg');
-}
-.replacetext {
-	background-image: url('../../svg/overline.svg');
-}
-.replace{
-	background-image: url('../../svg/redstrikeout.svg');
-}
-
-.link { cursor: pointer; background-image: url('../../svg/underline.svg');}

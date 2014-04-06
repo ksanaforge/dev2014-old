@@ -82,7 +82,7 @@ var surface = React.createClass({
 
       markupclasses.sort();
       if (markupclasses.length) tagset[markupclasses.join(",")]=true;
-      var ch=I[i];
+      var ch=I[i]; 
       if (ch==="\n") {ch="\u21a9";extraclass+=' br';}
       classes=(extraclass+" "+markupclasses.join("__")).trim();
       xml.push(<token key={i} cls={classes} n={i} ch={ch} replaceto={replaceto}></token>);
@@ -90,7 +90,7 @@ var surface = React.createClass({
     xml.push(<token key={I.length} n={I.length}/>);
 
     if (this.props.onTagSet) {
-      this.props.onTagSet(Object.keys(tagset),this.state.uuid);
+      this.props.onTagSet(Object.keys(tagset).sort(),this.state.uuid);
     }
     return xml;
   },  

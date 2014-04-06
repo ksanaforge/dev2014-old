@@ -1,10 +1,8 @@
 /** @jsx React.DOM */
 var kdoc=Require('ksana-document').document;
 var surface=require("docsurface"); 
-var $=require("jquery");
 var bootstrap=require("bootstrap");
 var cssgen=require("./cssgen");
-//var othercomponent=Require("other"); 
 var docview = React.createClass({
 
   getInitialState: function() { 
@@ -12,12 +10,19 @@ var docview = React.createClass({
     return {D:D, selstart:0, sellength:0, page:null};
   },
   contextMenu:function() {
-    return this.props.menu({ref:"menu", onPageAction:this.onPageAction});
+    if (this.props.menu) {
+      return this.props.menu({ref:"menu", onPageAction:this.onPageAction});  
+    } else {
+      return <span></span>
+    }    
   },
   onTagSet:function(tagset,uuid) {
     if (!tagset || !tagset.length)return;
     if (!this.state.page)return;
-    cssgen.applyStyles(this.props.styles,tagset,"div[data-id='"+uuid+"'] ");
+    if (JSON.stringify(this.tagset)!=JSON.stringify(tagset)) {
+      this.tagset=tagset;
+      cssgen.applyStyles(this.props.styles,tagset,"div[data-id='"+uuid+"'] ");
+    }
   },
   render: function() {
     return (
@@ -33,16 +38,22 @@ var docview = React.createClass({
     );
   },
   onPageAction:function() {
-    var args = [];
+    var args = [],r;
     Array.prototype.push.apply( args, arguments );
     var api=args.shift();
-    this.state.page[api].apply(this.state.page,args);
-    var newstart=this.state.selstart+this.state.sellength;
-    this.setState({selstart:newstart,sellength:0});  
+    var func=this.state.page[api];
+    if (func) {
+      r=func.apply(this.state.page,args);
+      var newstart=this.state.selstart+this.state.sellength;
+      this.setState({selstart:newstart,sellength:0});  
+    } else {
+      console.error("cannot find function ",api);
+    }
+    return r;
   },
   onSelection:function(start,len,x,y) {
     this.setState({selstart:start,sellength:len});
-    if (this.refs.menu.onPopup) {
+    if (this.props.menu && this.refs.menu.onPopup) {
       var context={
         text:this.state.page.inscription.substr(start,len),
         selstart:start,
@@ -51,11 +62,19 @@ var docview = React.createClass({
       this.refs.menu.onPopup(context);
     }
     if (len) {
-      $(this.refs.menu.getDOMNode()).css({left:x,top:y}).addClass("open");
+      if (this.props.menu) {
+        var menu=this.refs.menu.getDOMNode();
+        menu.classList.add("open");
+        menu.style.left=x+'px';
+        menu.style.top=y+'px';
+      }
     }
+    if (this.props.onSelection) {  
+      this.props.onSelection( this.onPageAction,start,len,x,y);
+    } 
   },
   createPage:function() {
-    this.setState({page:this.state.D.createPage(this.props.doc.text)});
+    this.setState({page:this.state.D.createPage(this.props.doc)});
   },   
   componentDidMount:function() {
     this.createPage();
