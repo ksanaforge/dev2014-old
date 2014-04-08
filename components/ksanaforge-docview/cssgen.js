@@ -9,7 +9,7 @@ var createStyleSheet=function() {
 	tagset is tag used in the page, overlap tag are concat with ,
 	use prefix to prepend all rules
 */
-var addRule=function(sheet,tags,prefix,SS) {
+var insertRule=function(sheet,tags,prefix,SS) {
 	var background_images=[]; 
 	var combined=" ";
 	for (var j=0;j<SS.length;j++) {
@@ -43,7 +43,7 @@ var applyStyles=function(styles,tagset,prefix) {
 			var s=styles[tags[j]]; 
 			if (s) SS.push(s);
 		}
-		addRule(sheet,tags,prefix,SS);
+		insertRule(sheet,tags,prefix,SS);
 	}
 }
 var api={applyStyles:applyStyles};

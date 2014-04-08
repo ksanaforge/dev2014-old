@@ -12,7 +12,7 @@ module.exports={
       bin:'../node_webkit/osx-ia32/node-webkit.app/Contents/MacOS/node-webkit'
     },
     'linux':{
-      node_webkit_url:'https://s3.amazonaws.com/node-webkit/v0.9.2/node-webkit-v0.9.2-linux-ia32.zip',
+      url:'https://s3.amazonaws.com/node-webkit/v0.9.2/node-webkit-v0.9.2-linux-ia32.zip',
       zip:'node_webkit/download/linux-ia32.zip',
       path:'node_webkit/linux-ia32'
     }
