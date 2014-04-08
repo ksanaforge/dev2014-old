@@ -113,7 +113,9 @@ gulp.task('min',['rebuild'],function(){
 gulp.task('mkzip',['min'],function(){
   var mkzip=require('./node_scripts/mkzip');
   var appname=process.cwd();
-  mkzip(appname);
+  var argv = require('minimist')(process.argv.slice(2));
+  var platform=argv['platform'] || process.platform;;
+  mkzip(appname,platform);
 })
 
 

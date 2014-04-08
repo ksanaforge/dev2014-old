@@ -18,8 +18,8 @@ var nwpath={
 	'darwin':'osx-ia32',
 	'linux':'linux-ia32'	
 }
-var platform=process.platform;
 
+var platform=process.platform;
 var ZipWriter = require("./zipwriter").ZipWriter;
 var zip = new ZipWriter();
 var walk = function(dir) {
@@ -39,17 +39,24 @@ var walk = function(dir) {
     })
     return results
 }
-var addfile=function(f,addtoroot) {
+var addfile=function(f,upfolder) {
 	if (f.indexOf(".git")>-1 || f.indexOf(".bak")>-1  || f.indexOf(".log")>-1) {
 //		console.log('skip',f);
 		return;
 	}
 	console.log('add ',f);	
 	var target=f;
-	if (addtoroot) target=f.split('/').pop();
+	if (upfolder) {
+		var folders=f.split('/');
+		while (upfolder--) folders.shift();
+		if (folders.length<1) {
+			throw "reduce the upfolder number"
+		}
+		target=folders.join('/');
+	}
 	zip.addFile(target,f);
 }
-var addtozip=function(files,addtoroot) {
+var addtozip=function(files,upfolder) {
 	for (var i in files) {
 		var file=files[i];
 		if (!fs.existsSync(file)) throw 'not exist '+file;
@@ -58,10 +65,10 @@ var addtozip=function(files,addtoroot) {
 		if (stats.isDirectory()) {
 			var folderfiles=walk(file);
 			for (var j in folderfiles) {
-				addfile(folderfiles[j],addtoroot);
+				addfile(folderfiles[j],upfolder);
 			}
 		} else {
-			addfile(file,addtoroot);
+			addfile(file,upfolder);
 		}
 	}
 }
@@ -75,14 +82,13 @@ var indexhtml='<html>\n<head>\n<meta charset="utf-8" />\n'+
 						'</html>';
 var add_appfiles=function(appfolder,zip) {
 	zip.addData("index.html",indexhtml);
-	addfile(appfolder+"/index.css",true);
-	addfile(appfolder+"/package.json",true);
-	addfile(appfolder+"/build/build.min.js",true);
-	addfile(appfolder+"/build/build.css",true);
-
+	addfile(appfolder+"/index.css",1);
+	addfile(appfolder+"/package.json",1);
+	addfile(appfolder+"/build/build.min.js",2);
+	addfile(appfolder+"/build/build.css",2);
 	if (fs.existsSync(appfolder+"/mkzip.json")){
 		var deploy=require("../"+appfolder+"/mkzip.json");
-		if (deploy.files) addtozip(deploy.files , true);
+		if (deploy.files) addtozip(deploy.files , 1);
 		//array of node modules 
 		//['node_modules/yadb','node_modules/yase']
 		if (deploy.repos) addtozip(deploy.repos);
@@ -90,15 +96,18 @@ var add_appfiles=function(appfolder,zip) {
 }
 
 var add_node_webkit=function() {
-	addtozip(['node_webkit/'+nwpath[platform]],true);
+	console.log('node_webkit/'+nwpath[platform],process.cwd())
+
+	addtozip(['node_webkit/'+nwpath[platform]],2);
 	
 }
 /*
   change package.json to "main": "../../cst/index.html",
   and put in node-webkit exe folder
 */
-var mkzip=function(appfolder) {
+var mkzip=function(appfolder,pf) {
 	var starttime=new Date();
+	platform=pf || process.platform;
 
 	var date =new Date().toISOString().substring(0,10);
 	var folders=appfolder.split(path.sep);
