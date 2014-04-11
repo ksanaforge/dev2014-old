@@ -12,7 +12,8 @@ var unzip=require('unzip');
 var clean = require('gulp-clean');
 var spawn = require('child_process').spawn;
 var exec= require('child_process').exec;
-
+var zlib=require('zlib');
+var tar=require('tar');
 var outback = function (s) {
     while (s.length < 70) s += ' ';
     var l = s.length; 
@@ -38,7 +39,7 @@ gulp.task('install-node-webkit', function() {
 	parent.pop();
 	var parentfolder=parent.join('/');
 
-	if (!fs.existsSync(parentfolder)) fs.mkdirSync(parentfolder);
+	if (parentfolder && !fs.existsSync(parentfolder)) fs.mkdirSync(parentfolder);
 	if (!fs.existsSync(nw.path)) fs.mkdirSync(nw.path);
 	var writeStream = fstream.Writer(nw.path);
 	var datalength=0;
@@ -55,7 +56,7 @@ gulp.task('install-node-webkit', function() {
 				}
 			},1000);
 		});
-		if (nw.path.indexOf("tar.gz")>0) {
+		if (nw.path.indexOf("zip")==-1) {
 			response.pipe(zlib.createGunzip()	)
 			.pipe(tar.Parse())
 			.pipe(writeStream);	
