@@ -15,7 +15,8 @@
     "minimist": "0.0.7",
     "gulp-filelog": "~0.2.0",
     "gulp-tap": "*",
-    "gulp-component": "~0.1.5"
+    "gulp-component": "~0.1.5",
+    "tar":"*"
   },
   "dependencies": {
     "adm-zip": "*",

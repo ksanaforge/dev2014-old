@@ -47,8 +47,22 @@ gulp.task('install-node-webkit', function() {
 			datalength+=chunk.length;
 			outback('downloading '+datalength);
 		});
-		response.pipe(unzip.Parse())
-		.pipe(writeStream);
+		response.on("end",function() {
+			setTimeout(function(){
+				console.log("renaming")
+				if (nw.rename) {
+					require('fs').renameSync(nw.rename[0],nw.rename[1]);
+				}
+			},1000);
+		});
+		if (nw.path.indexOf("tar.gz")>0) {
+			response.pipe(zlib.createGunzip()	)
+			.pipe(tar.Parse())
+			.pipe(writeStream);	
+		} else {
+			response.pipe(unzip.Parse())
+			.pipe(writeStream);
+		}
 	});
 });
 
