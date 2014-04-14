@@ -47,6 +47,7 @@ var surface = React.createClass({
   toXML : function(page,opts) {
     if (!page) return [];
     var I=page.inscription;
+    if (!I) return [] ;
     var xml=[];
     var tagset={};//tags used in the page, comma to seperate overlap tag 
     var selstart=opts.selstart||0,sellength=opts.sellength||0;

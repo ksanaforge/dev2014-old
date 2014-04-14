@@ -1,13 +1,11 @@
 /** @jsx React.DOM */
-var kdoc=Require('ksana-document').document;
 var surface=require("docsurface"); 
 var bootstrap=require("bootstrap");
 var cssgen=require("./cssgen");
 var docview = React.createClass({
 
   getInitialState: function() { 
-    var D=kdoc.createDocument();
-    return {D:D, selstart:0, sellength:0, page:null};
+    return {selstart:0, sellength:0};
   },
   contextMenu:function() {
     if (this.props.menu) {
@@ -18,17 +16,19 @@ var docview = React.createClass({
   },
   onTagSet:function(tagset,uuid) {
     if (!tagset || !tagset.length)return;
-    if (!this.state.page)return;
     if (JSON.stringify(this.tagset)!=JSON.stringify(tagset)) {
       this.tagset=tagset;
       cssgen.applyStyles(this.props.styles,tagset,"div[data-id='"+uuid+"'] ");
     }
   },
+  page:function() {
+    return this.props.doc.getPage(this.state.pageid);
+  },
   render: function() {
     return (
       <div>
       {this.contextMenu()}
-       <surface page={this.state.page}
+       <surface page={this.props.page}
                 selstart={this.state.selstart} 
                 sellength={this.state.sellength}
                 onTagSet={this.onTagSet}
@@ -41,10 +41,10 @@ var docview = React.createClass({
     var args = [],r;
     Array.prototype.push.apply( args, arguments );
     var api=args.shift();
-    var func=this.state.page[api];
+    var func=this.props.page[api];
     if (func) {
-      r=func.apply(this.state.page,args);
-      var newstart=this.state.selstart+this.state.sellength;
+      r=func.apply(this.props.page,args);
+      var newstart=this.selstart+this.state.sellength;
       this.setState({selstart:newstart,sellength:0});  
     } else {
       console.error("cannot find function ",api);
@@ -55,7 +55,7 @@ var docview = React.createClass({
     this.setState({selstart:start,sellength:len});
     if (this.props.menu && this.refs.menu.onPopup) {
       var context={
-        text:this.state.page.inscription.substr(start,len),
+        text:this.props.page.inscription.substr(start,len),
         selstart:start,
         sellength:len
       }
@@ -72,12 +72,6 @@ var docview = React.createClass({
     if (this.props.onSelection) {  
       this.props.onSelection( this.onPageAction,start,len,x,y);
     } 
-  },
-  createPage:function() {
-    this.setState({page:this.state.D.createPage(this.props.doc)});
-  },   
-  componentDidMount:function() {
-    this.createPage();
   }
 });
 module.exports=docview;
