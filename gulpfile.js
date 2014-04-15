@@ -56,7 +56,7 @@ gulp.task('install-node-webkit', function() {
 				}
 			},1000);
 		});
-		if (nw.path.indexOf("zip")==-1) {
+		if (nw.path.indexOf("linux")>-1) {
 			response.pipe(zlib.createGunzip()	)
 			.pipe(tar.Parse())
 			.pipe(writeStream);	
