@@ -19,7 +19,6 @@
     "tar":"*"
   },
   "dependencies": {
-    "adm-zip": "*",
     "socket.io": "*"
   },
   "scripts": {

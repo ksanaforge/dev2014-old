@@ -9,7 +9,7 @@ if (typeof process !="undefined") {
 }
 
 var React=require('../react');
-require("../cortex");
+//require("../cortex");
 var Require=function(arg){return require("../"+arg)};
 var boot=function(appId,main,maindiv) {
 	main=main||"main";

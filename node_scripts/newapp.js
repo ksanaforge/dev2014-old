@@ -28,12 +28,13 @@ module.exports=function(appname){
 '  "keywords": [],\n'+
 '  "dependencies": {\n'+
 '    "ksanaforge/boot": "*",\n'+
+'    "socketio/socketio": "*",\n'+
 '    "brighthas/bootstrap": "*",\n'+
 '    "component/jquery": "*"\n'+
 '  },\n'+
 '  "development": {},\n'+
 '  "paths": ["components","../components","../node_modules/"],\n'+
-'  "local": ["facebook/react","mquan/cortex"],\n'+
+'  "local": ["facebook/react"],\n'+
 '  "license": "MIT",\n'+
 '  "main": "index.js",\n'+
 '  "scripts": ["index.js"],\n'+
