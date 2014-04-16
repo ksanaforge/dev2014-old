@@ -9,7 +9,7 @@ var docview = React.createClass({
   },
   contextMenu:function() {
     if (this.props.menu) {
-      return this.props.menu({ref:"menu", onPageAction:this.onPageAction});  
+      return this.props.menu.popup({ref:"menu", onPageAction:this.onPageAction});  
     } else {
       return <span></span>
     }    
@@ -29,6 +29,7 @@ var docview = React.createClass({
       <div>
       {this.contextMenu()}
        <surface page={this.props.page}
+                menu={this.props.menu}
                 selstart={this.state.selstart} 
                 sellength={this.state.sellength}
                 onTagSet={this.onTagSet}
@@ -66,7 +67,7 @@ var docview = React.createClass({
         var menu=this.refs.menu.getDOMNode();
         menu.classList.add("open");
         menu.style.left=x+'px';
-        menu.style.top=y+'px';
+        menu.style.top=(y-50)+'px'; //don't know why
       }
     }
     if (this.props.onSelection) {  

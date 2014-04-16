@@ -35,7 +35,15 @@ var surface = React.createClass({
     this.refs.surface.getDOMNode().focus();
     return {start:start,len:length};
   },
+  inInlineMenu:function(domnode) {
+    while (domnode) {
+      if (domnode.className==="inlinemenu") return true;
+      domnode=domnode.parentElement;
+    }
+    return false;
+  },
   mouseup:function(e) {
+    if (this.inInlineMenu(e.target))return;
     var sel=this.getSelection();
     if (e.target.getAttribute("class")=="link") {
       var M=this.props.page.markupAt(sel.start);
@@ -44,9 +52,42 @@ var surface = React.createClass({
       this.props.onSelection(sel.start,sel.len,e.pageX,e.pageY);
     }
   },
+  inlinemenuaction:function() {
+    console.log("menuaction");
+    this.forceUpdate();
+  },
+  addInlinemenu:function(m,text) {
+    if (!this.props.menu||!this.props.menu.inline)return;
+    var menu=this.props.menu.inline[m.payload.type];
+    if (menu) {
+      return (
+      <span className="inlinemenu">
+      {menu({action:this.inlinemenuaction,text:text,markup:m.payload})}
+      </span>
+      );
+    }
+  },
+  renderRevision:function(R,xml) {
+    var extraclass="";
+    if (R[0].len===0) {
+      extraclass+=" insert"; 
+//          replaceto=R[0].payload.text;
+      xml.push(<span className={extraclass+" inserttext"}>{R[0].payload.text}</span>);
+    } else  {
+      if (R[0].payload.text) {
+        if (i>=R[0].start && i<R[0].start+R[0].len) extraclass+=" replace"; 
+        if (i===R[0].start+R[0].len) {
+          xml.push(<span className={extraclass+" replacetext"}>{R[0].payload.text}</span>);
+        } 
+      }
+      else if (i>=R[0].start && i<R[0].start+R[0].len) extraclass+=" delete";  
+    }
+      //if (R[0].start!=i)replaceto="";
+    return extraclass;
+  },
   toXML : function(page,opts) {
     if (!page) return [];
-    var I=page.inscription;
+    var I=page.inscription;  //should tokenize
     if (!I) return [] ;
     var xml=[];
     var tagset={};//tags used in the page, comma to seperate overlap tag 
@@ -58,27 +99,17 @@ var surface = React.createClass({
       var M=page.markupAt(i);
       var R=page.revisionAt(i),replaceto="";
       if (i>=selstart && i<selstart+sellength) extraclass+=' selected';
-      if (R.length) {
-        if (R[0].len===0) {
-          extraclass+=" insert"; 
-//          replaceto=R[0].payload.text;
-          xml.push(<span className={extraclass+" inserttext"}>{R[0].payload.text}</span>);
-        } else  {
-          if (R[0].payload.text) {
-            if (i>=R[0].start && i<R[0].start+R[0].len) extraclass+=" replace"; 
-            if (i===R[0].start+R[0].len) {
-              xml.push(<span className={extraclass+" replacetext"}>{R[0].payload.text}</span>);
-            } 
-          }
-          else if (i>=R[0].start && i<R[0].start+R[0].len) extraclass+=" delete";  
-        }
-        if (R[0].start!=i)replaceto="";
-      }
+      if (R.length) extraclass+=this.renderRevision(R[0],xml);
 
       //naive solution, need to create many combination class
       //create dynamic stylesheet,concat multiple background image with ,
+      var inlinemenu=null;
       for (var j in M) {
         markupclasses.push(M[j].payload.type);
+        if (M[j].start+M[j].len==i+1) {
+          var text=page.inscription.substr(M[j].start,M[j].len);
+          inlinemenu=this.addInlinemenu(M[j],text);
+        }
       }
 
       markupclasses.sort();
@@ -87,6 +118,7 @@ var surface = React.createClass({
       if (ch==="\n") {ch="\u21a9";extraclass+=' br';}
       classes=(extraclass+" "+markupclasses.join("__")).trim();
       xml.push(<token key={i} cls={classes} n={i} ch={ch} replaceto={replaceto}></token>);
+      if (inlinemenu) xml.push(inlinemenu);
     }
     xml.push(<token key={I.length} n={I.length}/>);
 
