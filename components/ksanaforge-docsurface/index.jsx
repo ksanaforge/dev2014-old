@@ -106,6 +106,13 @@ var surface = React.createClass({
       var inlinemenu=null;
       for (var j in M) {
         markupclasses.push(M[j].payload.type);
+        if (M[j].start==i) {
+          markupclasses.push(M[j].payload.type+"_b");
+        }
+        if (M[j].start+M[j].len==i+1) {
+          markupclasses.push(M[j].payload.type+"_e");
+        }
+
         if (M[j].start+M[j].len==i+1) {
           var text=page.inscription.substr(M[j].start,M[j].len);
           inlinemenu=this.addInlinemenu(M[j],text);
