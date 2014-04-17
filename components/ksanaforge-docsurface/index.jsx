@@ -35,15 +35,20 @@ var surface = React.createClass({
     this.refs.surface.getDOMNode().focus();
     return {start:start,len:length};
   },
-  inInlineMenu:function(domnode) {
-    while (domnode) {
-      if (domnode.className==="inlinemenu") return true;
-      domnode=domnode.parentElement;
+
+  mousemove:function(e) {
+    if (this.inlinemenu) return;
+    var n=e.target.nextSibling;
+    if (n && n.className=="inlinemenu") {
+      n.style.display="inline";
+      var focus=n.querySelector(".focus");
+      if (focus) focus.focus();
+      this.inlinemenu=n;
     }
-    return false;
   },
   mouseup:function(e) {
-    if (this.inInlineMenu(e.target))return;
+    if (this.inlinemenu) return;
+    //if (this.inInlineMenu(e.target))return;
     var sel=this.getSelection();
     if (e.target.getAttribute("class")=="link") {
       var M=this.props.page.markupAt(sel.start);
@@ -54,6 +59,8 @@ var surface = React.createClass({
   },
   inlinemenuaction:function() {
     console.log("menuaction");
+    this.inlinemenu.style.display='none';
+    this.inlinemenu=null;
     this.forceUpdate();
   },
   addInlinemenu:function(m,text) {
@@ -95,11 +102,11 @@ var surface = React.createClass({
     
     for (var i=0;i<I.length;i++) {
       var classes="",extraclass="";
-      var markupclasses=[];
+      var markupclasses=[],appendtext="";
       var M=page.markupAt(i);
-      var R=page.revisionAt(i),appendtext="";
       if (i>=selstart && i<selstart+sellength) extraclass+=' selected';
-      if (R.length) extraclass+=this.renderRevision(R[0],xml);
+      //var R=page.revisionAt(i),
+      //if (R.length) extraclass+=this.renderRevision(R[0],xml);
 
       //naive solution, need to create many combination class
       //create dynamic stylesheet,concat multiple background image with ,
@@ -112,8 +119,6 @@ var surface = React.createClass({
         if (M[j].start+M[j].len==i+1) {
           markupclasses.push(M[j].payload.type+"_e");
         }
-
-
         if (M[j].start+M[j].len==i+1) { //last token
           var text=page.inscription.substr(M[j].start,M[j].len);
           inlinemenu=this.addInlinemenu(M[j],text);
@@ -121,12 +126,18 @@ var surface = React.createClass({
 
         //append text
         if (M[j].payload.selected) {
-          var appendtext=M[j].payload.choices[M[j].payload.selected-1].text;
+          appendtext=M[j].payload.choices[M[j].payload.selected-1].text;
           var insert=M[j].payload.choices[M[j].payload.selected-1].insert;
           if (!insert) extraclass+=" remove";
-
           if (M[j].start+M[j].len!=i+1) appendtext=""; //only put on last token
-        }  
+        }
+
+        if (typeof M[j].payload.text!='undefined') {
+          appendtext=M[j].payload.text;
+          var insert=M[j].payload.insert;
+          if (!insert) extraclass+=" remove";
+          if (M[j].start+M[j].len!=i+1) appendtext=""; //only put on last token 
+        }
       }  
 
       markupclasses.sort();
@@ -149,7 +160,7 @@ var surface = React.createClass({
     var xml=this.toXML(this.props.page,opts);    
     return (
       <div  data-id={this.state.uuid} className="surface">
-          <div ref="surface" tabIndex="0" onMouseUp={this.mouseup}>{xml}</div>
+          <div ref="surface" tabIndex="0" onMouseMove={this.mousemove} onMouseUp={this.mouseup}>{xml}</div>
       </div>
     );
   },
