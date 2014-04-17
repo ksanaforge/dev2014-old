@@ -1,9 +1,9 @@
 /** @jsx React.DOM */
 var token = React.createClass({
   render:function() {
-    if (this.props.replaceto)
-          return <span className={this.props.cls} data-to={this.props.replaceto} data-n={this.props.n}>{this.props.ch}</span>;
-    else  return <span className={this.props.cls} data-n={this.props.n}>{this.props.ch}</span>;
+    var opts={ className:this.props.cls,'data-n':this.props.n}
+    if (this.props.appendtext) opts['data-to']=this.props.appendtext;
+    return React.DOM.span(opts,this.props.ch);
   }
 });
 var surface = React.createClass({
@@ -97,13 +97,13 @@ var surface = React.createClass({
       var classes="",extraclass="";
       var markupclasses=[];
       var M=page.markupAt(i);
-      var R=page.revisionAt(i),replaceto="";
+      var R=page.revisionAt(i),appendtext="";
       if (i>=selstart && i<selstart+sellength) extraclass+=' selected';
       if (R.length) extraclass+=this.renderRevision(R[0],xml);
 
       //naive solution, need to create many combination class
       //create dynamic stylesheet,concat multiple background image with ,
-      var inlinemenu=null;
+      var inlinemenu=null;      
       for (var j in M) {
         markupclasses.push(M[j].payload.type);
         if (M[j].start==i) {
@@ -113,20 +113,30 @@ var surface = React.createClass({
           markupclasses.push(M[j].payload.type+"_e");
         }
 
-        if (M[j].start+M[j].len==i+1) {
+
+        if (M[j].start+M[j].len==i+1) { //last token
           var text=page.inscription.substr(M[j].start,M[j].len);
           inlinemenu=this.addInlinemenu(M[j],text);
         }
-      }
+
+        //append text
+        if (M[j].payload.selected) {
+          var appendtext=M[j].payload.choices[M[j].payload.selected-1].text;
+          var insert=M[j].payload.choices[M[j].payload.selected-1].insert;
+          if (!insert) extraclass+=" remove";
+
+          if (M[j].start+M[j].len!=i+1) appendtext=""; //only put on last token
+        }  
+      }  
 
       markupclasses.sort();
       if (markupclasses.length) tagset[markupclasses.join(",")]=true;
       var ch=I[i]; 
       if (ch==="\n") {ch="\u21a9";extraclass+=' br';}
       classes=(extraclass+" "+markupclasses.join("__")).trim();
-      xml.push(<token key={i} cls={classes} n={i} ch={ch} replaceto={replaceto}></token>);
+      xml.push(token({ key:i , cls:classes ,n:i,ch:ch, appendtext:appendtext}));
       if (inlinemenu) xml.push(inlinemenu);
-    }
+    }    
     xml.push(<token key={I.length} n={I.length}/>);
 
     if (this.props.onTagSet) {
