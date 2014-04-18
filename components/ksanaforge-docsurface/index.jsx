@@ -35,17 +35,26 @@ var surface = React.createClass({
     this.refs.surface.getDOMNode().focus();
     return {start:start,len:length};
   },
-
+  openinlinemenu:function(n) {
+    n.style.display="inline";
+    var focus=n.querySelector(".focus");
+    if (focus) focus.focus();
+    this.inlinemenu=n;
+    this.inlinemenutimer=null;
+  },
   mousemove:function(e) {
     if (this.inlinemenu) return;
     var n=e.target.nextSibling;
     if (n && n.className=="inlinemenu") {
-      n.style.display="inline";
-      var focus=n.querySelector(".focus");
-      if (focus) focus.focus();
-      this.inlinemenu=n;
+      if (this.inlinemenutimer) {
+        clearTimeout(this.inlinemenutimer);
+        this.inlinemenutimer=null;
+      };
+      this.inlinemenutimer=setTimeout(this.openinlinemenu.bind(this,n),300);
+    } else {
+      clearTimeout(this.inlinemenutimer);
     }
-  },
+  }, 
   mouseup:function(e) {
     if (this.inlinemenu) return;
     //if (this.inInlineMenu(e.target))return;

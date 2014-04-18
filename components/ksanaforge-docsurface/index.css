@@ -16,7 +16,7 @@
   0% {border-color: hsl(0, 100%, 50%);}
   100% {border-color: hsl(255, 100%, 50%);}
 }
-.surface span.remove {text-decoration: line-through}
+.surface span.remove {text-decoration: line-through; }
 .surface span[data-to]::after {
  content: attr(data-to);
  text-decoration: none; 
