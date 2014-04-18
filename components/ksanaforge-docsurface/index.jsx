@@ -36,27 +36,32 @@ var surface = React.createClass({
     return {start:start,len:length};
   },
   openinlinemenu:function(n) {
-    n.style.display="inline";
-    var focus=n.querySelector(".focus");
-    if (focus) focus.focus();
-    this.inlinemenu=n;
-    this.inlinemenutimer=null;
+    var n=parseInt(n);
+    var m=this.props.page.markupAt(n);
+    if (!m.length) return;
+    var m=m[0];
+    var menu=this.props.menu.inline[m.payload.type];
+    if (menu) {
+      this.setState({markup:m});
+    }
   },
+
   mousemove:function(e) {
-    if (this.inlinemenu) return;
-    var n=e.target.nextSibling;
-    if (n && n.className=="inlinemenu") {
+    if (this.state.markup) return;
+    if (!e.target.attributes['data-n']) return;
+    var n=e.target.attributes['data-n'].value;
+    if (n) {
       if (this.inlinemenutimer) {
         clearTimeout(this.inlinemenutimer);
         this.inlinemenutimer=null;
       };
-      this.inlinemenutimer=setTimeout(this.openinlinemenu.bind(this,n),300);
+      this.inlinemenutimer=setTimeout(this.openinlinemenu.bind(this,[n]),250);
     } else {
       clearTimeout(this.inlinemenutimer);
     }
   }, 
   mouseup:function(e) {
-    if (this.inlinemenu) return;
+    if (this.state.markup) return;
     //if (this.inInlineMenu(e.target))return;
     var sel=this.getSelection();
     if (e.target.getAttribute("class")=="link") {
@@ -68,21 +73,35 @@ var surface = React.createClass({
   },
   inlinemenuaction:function() {
     console.log("menuaction");
-    this.inlinemenu.style.display='none';
-    this.inlinemenu=null;
-    this.forceUpdate();
+    this.setState({markup:null});
   },
-  addInlinemenu:function(m,text) {
+  moveInlineMenu:function() {
+    if (!this.state.markup) return;
+    var m=this.state.markup;
+    var domnode=this.getDOMNode().querySelector('span[data-n="'+m.start+'"]');
+    if (!domnode) return;
+    var menu=this.refs.inlinemenu.getDOMNode();
+    menu.style.left=domnode.offsetLeft - this.getDOMNode().offsetLeft ;
+    menu.style.top=domnode.offsetTop - this.getDOMNode().offsetTop + domnode.offsetHeight +5 ;
+    menu.style.display='inline';
+    
+  },  
+  addInlinemenu:function() {
     if (!this.props.menu||!this.props.menu.inline)return;
+    if (!this.state.markup) return <span></span>;
+
+    var m=this.state.markup;
+    var text=this.props.page.inscription.substr(m.start,m.len);
     var menu=this.props.menu.inline[m.payload.type];
     if (menu) {
       return (
-      <span className="inlinemenu">
-      {menu({action:this.inlinemenuaction,text:text,markup:m.payload})}
+      <span ref="inlinemenu" className="inlinemenu">
+        {menu({action:this.inlinemenuaction,text:text,markup:m.payload})}
       </span>
       );
     }
   },
+  
   renderRevision:function(R,xml) {
     var extraclass="";
     if (R[0].len===0) {
@@ -128,10 +147,12 @@ var surface = React.createClass({
         if (M[j].start+M[j].len==i+1) {
           markupclasses.push(M[j].payload.type+"_e");
         }
+        /*
         if (M[j].start+M[j].len==i+1) { //last token
           var text=page.inscription.substr(M[j].start,M[j].len);
           inlinemenu=this.addInlinemenu(M[j],text);
         }
+        */
 
         //append text
         if (M[j].payload.selected) {
@@ -150,13 +171,16 @@ var surface = React.createClass({
       }  
 
       markupclasses.sort();
+      if (M[j]==this.state.markup && this.state.markup) {
+        extraclass+=" menuopened "; 
+      }     
       if (markupclasses.length) tagset[markupclasses.join(",")]=true;
-      var ch=I[i]; 
+      var ch=I[i];  
       if (ch==="\n") {ch="\u21a9";extraclass+=' br';}
-      classes=(extraclass+" "+markupclasses.join("__")).trim();
+      classes=(markupclasses.join("__")).trim()+" "+extraclass;
       xml.push(token({ key:i , cls:classes ,n:i,ch:ch, appendtext:appendtext}));
       if (inlinemenu) xml.push(inlinemenu);
-    }    
+    }     
     xml.push(<token key={I.length} n={I.length}/>);
 
     if (this.props.onTagSet) {
@@ -169,18 +193,18 @@ var surface = React.createClass({
     var xml=this.toXML(this.props.page,opts);    
     return (
       <div  data-id={this.state.uuid} className="surface">
+          {this.addInlinemenu()}
           <div ref="surface" tabIndex="0" onMouseMove={this.mousemove} onMouseUp={this.mouseup}>{xml}</div>
       </div>
     );
   },
   getInitialState:function() {
-    return {uuid:'u'+Math.random().toString().substring(2)};
+    return {uuid:'u'+Math.random().toString().substring(2), markup:null};
   },
-  componentDidMount:function() {
-   
-  },
+
   componentDidUpdate:function() {
     if (this.props.scrollto) this.scrollToSelection();
+    this.moveInlineMenu();
   }
 });
 

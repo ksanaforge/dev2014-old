@@ -8,12 +8,13 @@ var docview = React.createClass({
     return {selstart:0, sellength:0};
   },
   contextMenu:function() {
-    if (this.props.menu) {
+    if (this.props.menu.popup) {
       return this.props.menu.popup({ref:"menu", onPageAction:this.onPageAction});  
     } else {
       return <span></span>
     }    
   },
+
   onTagSet:function(tagset,uuid) {
     if (!tagset || !tagset.length)return;
     if (JSON.stringify(this.tagset)!=JSON.stringify(tagset)) {

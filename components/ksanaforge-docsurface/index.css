@@ -11,7 +11,8 @@
 .surface-caret {position:relative;background-color:gray;height:100%;
 	  -webkit-animation: fadein 0.75s ease-in alternate infinite;
 }
-.selected {background: #52B7FD;}
+.menuopened {background:LemonChiffon;}
+.selected {background: #32B7FD;}
 @-webkit-keyframes rainbow {
   0% {border-color: hsl(0, 100%, 50%);}
   100% {border-color: hsl(255, 100%, 50%);}
