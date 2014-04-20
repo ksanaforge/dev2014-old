@@ -2,8 +2,14 @@
 var yase=function(){
   ksana.services={};
   var makeinf=function(name) {
+      var service=null;
+      for (var i in ksana.services) {
+        if (ksana.services[i][name]) service=ksana.services[i]
+      }
+      if (!service) throw 'api not found '+name;
+
       return function(opts,callback) {
-              var data=ksana.services["yase"][name](opts);
+              var data=service[name](opts);
               //this line is not really needed.
               setTimeout( function() { callback(0,data) }, 0);        
              //callback(0,data);
@@ -17,20 +23,17 @@ var yase=function(){
       };
   }
 
+
   if (ksana.platform=='node-webkit' || ksana.platform=='chrome') {
     /* compatible async interface for browser side js code*/
-    if (ksana.platform=='node-webkit') {
-      api_yadb=nodeRequire('yadb').api;
-      api_yadb(ksana.services);
-      var api_yase=nodeRequire('yase').api ; 
-      api_yase(ksana.services); //install api into services
-    } else {
-      //do not export yadb
-      var api_yadb=require('../yadb').api;
-      api_yadb(ksana.services); //install api into services
-      var api_yase=require('../yase').api ;
-      api_yase(ksana.services); //install api into services
-    }
+    var api_yadb=nodeRequire('yadb').api;
+    api_yadb(ksana.services);
+    var api_yase=nodeRequire('yase').api ; 
+    api_yase(ksana.services); 
+
+    var api_document=nodeRequire('ksana-document').api;
+    api_document(ksana.services);
+
     return { //turn into async, for compatible with node_server
         phraseSearch: makeinf('phraseSearch'),
         boolSearch: makeinf('boolSearch'),
@@ -58,10 +61,14 @@ var yase=function(){
 
         enumLocalYdb:makeinf('enumLocalYdb'),
         sameId:makeinf('sameId'),
-        prepare:makeprepare()
+        prepare:makeprepare(),
+
+        //document services
+        enumProject:makeinf('enumProject')
     };  
 
   } else {
+    //cannot call document services in server mode
     //for node_server , use socket.io to talk to server-side yase_api.js
     return require('./rpc_yase');
   }

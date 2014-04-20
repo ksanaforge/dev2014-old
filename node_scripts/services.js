@@ -3,6 +3,7 @@
 var install_services=function( service_holder) {
 	require('yadb').api(service_holder); 
 	require('yase').api(service_holder); 
+	require('ksana-document').api(service_holder); 
 }
 
 module.exports=install_services;
