@@ -22,23 +22,8 @@ var docview = React.createClass({
       cssgen.applyStyles(this.props.styles,tagset,"div[data-id='"+uuid+"'] ");
     }
   },
-  page:function() {
-    return this.props.doc.getPage(this.state.pageid);
-  },
-  render: function() {
-    return (
-      <div>
-      {this.contextMenu()}
-       <surface page={this.props.page}
-                menu={this.props.menu}
-                selstart={this.state.selstart} 
-                sellength={this.state.sellength}
-                onTagSet={this.onTagSet}
-                onSelection={this.onSelection}>
-       </surface>
-      </div>
-    );
-  },
+
+
   onPageAction:function() {
     var args = [],r;
     Array.prototype.push.apply( args, arguments );
@@ -46,8 +31,9 @@ var docview = React.createClass({
     var func=this.props.page[api];
     if (func) {
       r=func.apply(this.props.page,args);
-      var newstart=this.selstart+this.state.sellength;
-      this.setState({selstart:newstart,sellength:0});  
+      var newstart=this.state.selstart+this.state.sellength;
+      var newmarkupat= (api=="addMarkup")?this.state.selstart:-1;
+      this.setState({selstart:newstart,sellength:0,newMarkupAt:newmarkupat});
     } else {
       console.error("cannot find function ",api);
     }
@@ -74,6 +60,22 @@ var docview = React.createClass({
     if (this.props.onSelection) {  
       this.props.onSelection( this.onPageAction,start,len,x,y);
     } 
+  },
+  render: function() {
+    return (
+      <div>
+      {this.contextMenu()}
+       <surface page={this.props.page}
+                menu={this.props.menu}
+                tokenizer={this.props.tokenizer}
+                newMarkupAt={this.state.newMarkupAt}
+                selstart={this.state.selstart} 
+                sellength={this.state.sellength}
+                onTagSet={this.onTagSet}
+                onSelection={this.onSelection}>
+       </surface>
+      </div>
+    );
   }
 });
 module.exports=docview;

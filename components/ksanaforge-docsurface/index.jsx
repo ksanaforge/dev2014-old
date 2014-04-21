@@ -120,19 +120,28 @@ var surface = React.createClass({
       //if (R[0].start!=i)replaceto="";
     return extraclass;
   },
+  tokenize:function(text) {
+    var tokenizers=Require("ksana-document").tokenizers;
+    var tokenizer= tokenizers[this.props.tokenizer||"simple"];
+    return tokenizer(text);
+  }, 
   toXML : function(page,opts) {
     if (!page) return [];
-    var I=page.inscription;  //should tokenize
-    if (!I) return [] ;
+    var res=this.tokenize(page.inscription)
+    var TK=res.tokens;
+    var offsets=res.offsets;
+    var skips=res.skips;
+    if (!TK || !TK.length) return [] ;
     var xml=[];
     var tagset={};//tags used in the page, comma to seperate overlap tag 
     var selstart=opts.selstart||0,sellength=opts.sellength||0;
     
-    for (var i=0;i<I.length;i++) {
+    for (var i=0;i<TK.length;i++) {
+      var tk=TK[i];
       var classes="",extraclass="";
       var markupclasses=[],appendtext="";
-      var M=page.markupAt(i);
-      if (i>=selstart && i<selstart+sellength) extraclass+=' selected';
+      var M=page.markupAt(offsets[i]);
+      if (offsets[i]>=selstart && offsets[i]<selstart+sellength) extraclass+=' selected';
       //var R=page.revisionAt(i),
       //if (R.length) extraclass+=this.renderRevision(R[0],xml);
 
@@ -141,10 +150,10 @@ var surface = React.createClass({
       var inlinemenu=null;      
       for (var j in M) {
         markupclasses.push(M[j].payload.type);
-        if (M[j].start==i) {
+        if (M[j].start==offsets[i]) {
           markupclasses.push(M[j].payload.type+"_b");
         }
-        if (M[j].start+M[j].len==i+1) {
+        if (M[j].start+M[j].len==offsets[i]+1 && !skips[i]) {
           markupclasses.push(M[j].payload.type+"_e");
         }
         /*
@@ -155,18 +164,18 @@ var surface = React.createClass({
         */
 
         //append text
-        if (M[j].payload.selected) {
+        if (M[j].payload.selected && !skips[i]) {
           appendtext=M[j].payload.choices[M[j].payload.selected-1].text;
           var insert=M[j].payload.choices[M[j].payload.selected-1].insert;
           if (!insert) extraclass+=" remove";
-          if (M[j].start+M[j].len!=i+1) appendtext=""; //only put on last token
+          if (M[j].start+M[j].len!=offsets[i]+1) appendtext=""; //only put on last token
         }
 
-        if (typeof M[j].payload.text!='undefined') {
+        if (typeof M[j].payload.text!='undefined'  && !skips[i]) {
           appendtext=M[j].payload.text;
           var insert=M[j].payload.insert;
           if (!insert) extraclass+=" remove";
-          if (M[j].start+M[j].len!=i+1) appendtext=""; //only put on last token 
+          if (M[j].start+M[j].len!=offsets[i]+1) appendtext=""; //only put on last token 
         }
       }  
 
@@ -175,13 +184,13 @@ var surface = React.createClass({
         extraclass+=" menuopened "; 
       }     
       if (markupclasses.length) tagset[markupclasses.join(",")]=true;
-      var ch=I[i];  
+      var ch=tk;  
       if (ch==="\n") {ch="\u21a9";extraclass+=' br';}
       classes=(markupclasses.join("__")).trim()+" "+extraclass;
-      xml.push(token({ key:i , cls:classes ,n:i,ch:ch, appendtext:appendtext}));
+      xml.push(token({ key:i , cls:classes ,n:offsets[i],ch:ch, appendtext:appendtext}));
       if (inlinemenu) xml.push(inlinemenu);
     }     
-    xml.push(<token key={I.length} n={I.length}/>);
+    xml.push(<token key={i} n={offsets[i]}/>);
 
     if (this.props.onTagSet) {
       this.props.onTagSet(Object.keys(tagset).sort(),this.state.uuid);
@@ -199,12 +208,17 @@ var surface = React.createClass({
     );
   },
   getInitialState:function() {
-    return {uuid:'u'+Math.random().toString().substring(2), markup:null};
+    return {uuid:'u'+Math.random().toString().substring(2), markup:null,newMarkupAt:-1};
   },
-
   componentDidUpdate:function() {
     if (this.props.scrollto) this.scrollToSelection();
     this.moveInlineMenu();
+    if (this.props.newMarkupAt!=this.state.newMarkupAt&&this.props.newMarkupAt>-1) {
+      setTimeout(
+        this.openinlinemenu.bind(this,this.props.newMarkupAt)
+        ,300);
+      this.setState({newMarkupAt:this.props.newMarkupAt})
+    }
   }
 });
 

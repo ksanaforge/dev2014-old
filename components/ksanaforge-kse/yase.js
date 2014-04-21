@@ -64,7 +64,10 @@ var yase=function(){
         prepare:makeprepare(),
 
         //document services
-        enumProject:makeinf('enumProject')
+        enumProject:makeinf('enumProject'),
+        getProjectFolders:makeinf('getProjectFolders'),
+        getProjectFiles:makeinf('getProjectFiles'),
+        openDocument:makeinf('openDocument'),
     };  
 
   } else {

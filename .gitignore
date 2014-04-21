@@ -1,5 +1,6 @@
 node_webkit
 node_modules
+ksana_databases
 components/component-jquery
 components/socketio-socketio
 test

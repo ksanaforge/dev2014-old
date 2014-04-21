@@ -60,13 +60,15 @@ var Tabui = React.createClass({
     var anchor=e.target.parentElement;
     var id=anchor.attributes['data-id'].value;
     var tabs=this.state.tabs;
-    for (var i in tabs) {
+    for (var i=0;i<tabs.length;i++) {
       if (tabs[i].id==id) {
         tabs.splice(i,1);
+        if (i) tabs[i-1].active=true;
         this.setState({"tabs":tabs});
         break;
       }
     }
+
   }, 
   newTab:function(T,idx) {
     tabs=this.state.tabs;
