@@ -22,10 +22,9 @@ var surface = React.createClass({
     var end=parseInt(e.getAttribute('data-n'),10);
     if (start==end && sel.anchorOffset==1) {
       //      this.setState({selstart:start+1,sellength:0});
-      
-      return {start:start+1,len:0};
+      return {start:start+s.innerText.length,len:0};
     }
-    var length=end-start+1  ;
+    var length=end-start+e.innerText.length  ;
     if (length<0) {
             temp=end; end=start; start=end;
     }
@@ -38,14 +37,13 @@ var surface = React.createClass({
   openinlinemenu:function(n) {
     var n=parseInt(n);
     var m=this.props.page.markupAt(n);
-    if (!m.length) return;
+    if (!m.length || !this.props.template.inlinemenu) return;
     var m=m[0];
-    var menu=this.props.menu.inline[m.payload.type];
+    var menu=this.props.template.inlinemenu[m.payload.type];
     if (menu) {
       this.setState({markup:m});
     }
   },
-
   mousemove:function(e) {
     if (this.state.markup) return;
     if (!e.target.attributes['data-n']) return;
@@ -87,19 +85,18 @@ var surface = React.createClass({
     
   },  
   addInlinemenu:function() {
-    if (!this.props.menu||!this.props.menu.inline)return;
-    if (!this.state.markup) return <span></span>;
+    if (!this.props.template.inlinemenu) return null;
+    if (!this.state.markup) return null;
 
     var m=this.state.markup;
     var text=this.props.page.inscription.substr(m.start,m.len);
-    var menu=this.props.menu.inline[m.payload.type];
-    if (menu) {
-      return (
+    var menu=this.props.template.inlinemenu[m.payload.type];
+    if (menu) return (
       <span ref="inlinemenu" className="inlinemenu">
         {menu({action:this.inlinemenuaction,text:text,markup:m.payload})}
       </span>
-      );
-    }
+    );
+    return null;
   },
   
   renderRevision:function(R,xml) {
@@ -120,17 +117,11 @@ var surface = React.createClass({
       //if (R[0].start!=i)replaceto="";
     return extraclass;
   },
-  tokenize:function(text) {
-    var tokenizers=Require("ksana-document").tokenizers;
-    var tokenizer= tokenizers[this.props.tokenizer||"simple"];
-    return tokenizer(text);
-  }, 
   toXML : function(page,opts) {
     if (!page) return [];
-    var res=this.tokenize(page.inscription)
+    var res=this.props.template.tokenize(page.inscription)
     var TK=res.tokens;
     var offsets=res.offsets;
-    var skips=res.skips;
     if (!TK || !TK.length) return [] ;
     var xml=[];
     var tagset={};//tags used in the page, comma to seperate overlap tag 
@@ -153,7 +144,7 @@ var surface = React.createClass({
         if (M[j].start==offsets[i]) {
           markupclasses.push(M[j].payload.type+"_b");
         }
-        if (M[j].start+M[j].len==offsets[i]+1 && !skips[i]) {
+        if (M[j].start+M[j].len==offsets[i]+1) {
           markupclasses.push(M[j].payload.type+"_e");
         }
         /*
@@ -164,18 +155,18 @@ var surface = React.createClass({
         */
 
         //append text
-        if (M[j].payload.selected && !skips[i]) {
+        if (M[j].payload.selected) {
           appendtext=M[j].payload.choices[M[j].payload.selected-1].text;
           var insert=M[j].payload.choices[M[j].payload.selected-1].insert;
           if (!insert) extraclass+=" remove";
-          if (M[j].start+M[j].len!=offsets[i]+1) appendtext=""; //only put on last token
+          if (M[j].start+M[j].len!=offsets[i]+tk.length) appendtext=""; 
         }
 
-        if (typeof M[j].payload.text!='undefined'  && !skips[i]) {
+        if (typeof M[j].payload.text!='undefined') {
           appendtext=M[j].payload.text;
           var insert=M[j].payload.insert;
           if (!insert) extraclass+=" remove";
-          if (M[j].start+M[j].len!=offsets[i]+1) appendtext=""; //only put on last token 
+          if (M[j].start+M[j].len!=offsets[i]+tk.length) appendtext=""; 
         }
       }  
 

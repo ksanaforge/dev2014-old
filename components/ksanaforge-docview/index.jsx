@@ -8,8 +8,8 @@ var docview = React.createClass({
     return {selstart:0, sellength:0};
   },
   contextMenu:function() {
-    if (this.props.menu.popup) {
-      return this.props.menu.popup({ref:"menu", onPageAction:this.onPageAction});  
+    if (this.props.template.contextmenu) {
+      return this.props.template.contextmenu({ref:"menu", onPageAction:this.onPageAction});  
     } else {
       return <span></span>
     }    
@@ -39,9 +39,17 @@ var docview = React.createClass({
     }
     return r;
   },
+  openmenu:function(x,y) {
+    if (this.refs.menu) {
+      var menu=this.refs.menu.getDOMNode();
+      menu.classList.add("open");
+      menu.style.left=x+'px';
+      menu.style.top=(y-this.getDOMNode().offsetTop)+'px'; 
+    }
+  },
   onSelection:function(start,len,x,y) {
     this.setState({selstart:start,sellength:len});
-    if (this.props.menu && this.refs.menu.onPopup) {
+    if (this.refs.menu && this.refs.menu.onPopup) {
       var context={
         text:this.props.page.inscription.substr(start,len),
         selstart:start,
@@ -49,14 +57,8 @@ var docview = React.createClass({
       }
       this.refs.menu.onPopup(context);
     }
-    if (len) {
-      if (this.props.menu) {
-        var menu=this.refs.menu.getDOMNode();
-        menu.classList.add("open");
-        menu.style.left=x+'px';
-        menu.style.top=(y-50)+'px'; //don't know why
-      }
-    }
+    if (len) setTimeout( this.openmenu.bind(this,x,y),200);
+
     if (this.props.onSelection) {  
       this.props.onSelection( this.onPageAction,start,len,x,y);
     } 
@@ -66,8 +68,7 @@ var docview = React.createClass({
       <div>
       {this.contextMenu()}
        <surface page={this.props.page}
-                menu={this.props.menu}
-                tokenizer={this.props.tokenizer}
+                template={this.props.template}
                 newMarkupAt={this.state.newMarkupAt}
                 selstart={this.state.selstart} 
                 sellength={this.state.sellength}

@@ -68,6 +68,7 @@ var yase=function(){
         getProjectFolders:makeinf('getProjectFolders'),
         getProjectFiles:makeinf('getProjectFiles'),
         openDocument:makeinf('openDocument'),
+        saveMarkup:makeinf('saveMarkup'),
     };  
 
   } else {

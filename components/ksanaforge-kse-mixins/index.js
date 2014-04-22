@@ -16,6 +16,9 @@ var YaseMixin = {
     this.$yase=function() {
       return kse.$yase.apply(this,arguments);
     }
+    this.$ksana=function() { //new name
+      return kse.$yase.apply(this,arguments);
+    }
     this.useDB=function() {
       return kse.useDB.apply(this,arguments);
     }
