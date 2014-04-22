@@ -1,0 +1,9 @@
+Resourcer -op:upd -src:win-ia32/nw.exe -type:14 -name:IDR_MAINFRAME -file:dhammagear\16.ico
+Resourcer -op:upd -src:win-ia32/nw.exe -type:14 -name:IDR_MAINFRAME -file:dhammagear\24.ico
+Resourcer -op:upd -src:win-ia32/nw.exe -type:14 -name:IDR_MAINFRAME -file:dhammagear\32.ico
+Resourcer -op:upd -src:win-ia32/nw.exe -type:14 -name:IDR_MAINFRAME -file:dhammagear\48.ico
+Resourcer -op:upd -src:win-ia32/nw.exe -type:14 -name:IDR_MAINFRAME -file:dhammagear\64.ico
+Resourcer -op:upd -src:win-ia32/nw.exe -type:14 -name:IDR_MAINFRAME -file:dhammagear\72.ico
+Resourcer -op:upd -src:win-ia32/nw.exe -type:14 -name:IDR_MAINFRAME -file:dhammagear\96.ico
+Resourcer -op:upd -src:win-ia32/nw.exe -type:14 -name:IDR_MAINFRAME -file:dhammagear\128.ico
+Resourcer -op:upd -src:win-ia32/nw.exe -type:14 -name:IDR_MAINFRAME -file:dhammagear\256.ico
