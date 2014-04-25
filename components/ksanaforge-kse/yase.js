@@ -69,6 +69,8 @@ var yase=function(){
         getProjectFiles:makeinf('getProjectFiles'),
         openDocument:makeinf('openDocument'),
         saveMarkup:makeinf('saveMarkup'),
+        saveDocument:makeinf('saveDocument'),
+        getUserSettings:makeinf('getUserSettings'),
     };  
 
   } else {
