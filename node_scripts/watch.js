@@ -1,4 +1,4 @@
-// var nodeRequire=require;
+var nodeRequire=require;
 var fs=nodeRequire('fs');
 var gui = global.window.nwDispatcher.requireNwGui();
 var sep=require('path').sep;
