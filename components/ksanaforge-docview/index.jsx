@@ -3,13 +3,14 @@ var surface=require("docsurface");
 var bootstrap=require("bootstrap");
 var cssgen=require("./cssgen");
 var docview = React.createClass({
-
   getInitialState: function() { 
     return {selstart:0, sellength:0};
   },
   contextMenu:function() {
     if (this.props.template.contextmenu) {
-      return this.props.template.contextmenu({ref:"menu", onPageAction:this.onPageAction});  
+      return this.props.template.contextmenu(
+        {ref:"menu",user:this.props.user, onPageAction:this.onPageAction}
+      );  
     } else {
       return <span></span>
     }    
@@ -65,9 +66,11 @@ var docview = React.createClass({
   },
   render: function() {
     return (
-      <div>
+      <div> 
       {this.contextMenu()}
        <surface page={this.props.page}
+                user={this.props.user}
+                action={this.props.action}
                 template={this.props.template}
                 newMarkupAt={this.state.newMarkupAt}
                 selstart={this.state.selstart} 

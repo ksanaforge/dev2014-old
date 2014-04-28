@@ -4,9 +4,7 @@ if (typeof $ =='undefined') $=Require('jquery');
 
 var Tabui = React.createClass({
   getInitialState:function(){
-    return {
-      tabs: this.props.tabs||[],
-    }
+    return { }
   },
  
   tabnav:function(T) {
@@ -31,10 +29,10 @@ var Tabui = React.createClass({
     return (
     <div>
       <ul className="nav nav-tabs">
-      { this.state.tabs.map(function(T){return tabnav(T) })  }
+      { this.props.tabs.map(function(T){return tabnav(T) })  }
       </ul>
       <div className="tab-content">
-      { this.state.tabs.map(function(T){return tabcontent(T) }) }
+      { this.props.tabs.map(function(T){return tabcontent(T) }) }
       </div>
     </div> 
   );
@@ -52,14 +50,14 @@ var Tabui = React.createClass({
   },
   goActiveTab:function() {
     var goTab=this.goTab;
-    var t=this.state.tabs.some(function(T){ 
+    var t=this.props.tabs.some(function(T){ 
       return T.active?goTab(T.id):false;
     })
   },
   closeTab:function(e) {
     var anchor=e.target.parentElement;
     var id=anchor.attributes['data-id'].value;
-    var tabs=this.state.tabs;
+    var tabs=this.props.tabs;
     for (var i=0;i<tabs.length;i++) {
       if (tabs[i].id==id) {
         tabs.splice(i,1);
@@ -71,7 +69,7 @@ var Tabui = React.createClass({
 
   }, 
   newTab:function(T,idx) {
-    tabs=this.state.tabs;
+    tabs=this.props.tabs;
     idx=idx||tabs.length;
     var tabexists=false;
     for (var i in tabs) {

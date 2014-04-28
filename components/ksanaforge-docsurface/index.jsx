@@ -7,6 +7,10 @@ var token = React.createClass({
   }
 });
 var surface = React.createClass({
+  componentWillUpdate:function(nextProps,nextState) {
+    //close inlinemenu if page change
+    if (nextProps.page!=this.props.page) nextState.markup=null;
+  },
   moveInputBox:function(rect) {
     var inputbox=this.refs.inputbox.getDOMNode();
     var surfacerect=this.refs.surface.getDOMNode().getBoundingClientRect();
@@ -36,7 +40,7 @@ var surface = React.createClass({
   },
   openinlinemenu:function(n) {
     var n=parseInt(n);
-    var m=this.props.page.markupAt(n);
+    var m=this.getMarkups(this.props.page,n);
     if (!m.length || !this.props.template.inlinemenu) return;
     var m=m[0];
     var menu=this.props.template.inlinemenu[m.payload.type];
@@ -70,7 +74,7 @@ var surface = React.createClass({
     }
   },
   inlinemenuaction:function() {
-    console.log("menuaction");
+    this.props.action.apply(this.props,arguments);
     this.setState({markup:null});
   },
   moveInlineMenu:function() {
@@ -93,7 +97,8 @@ var surface = React.createClass({
     var menu=this.props.template.inlinemenu[m.payload.type];
     if (menu) return (
       <span ref="inlinemenu" className="inlinemenu">
-        {menu({action:this.inlinemenuaction,text:text,markup:m.payload})}
+        {menu({action:this.inlinemenuaction,text:text,markup:m,
+          user:this.props.user})}
       </span>
     );
     return null;
@@ -117,6 +122,25 @@ var surface = React.createClass({
       //if (R[0].start!=i)replaceto="";
     return extraclass;
   },
+  orMarkups:function(m1,m2) { // m1 has higher priority
+    var out=[],positions={};
+    m1.map(function(m){ positions[m.start]=true});
+    for (var i=0;i<m2.length;i++) {
+      if (!positions[m2[i].start]) m1.push(m2[i]);
+    }
+    return m1;
+  },
+  getMarkups:function(page,offset) {
+    var user=this.props.user;
+    var M=page.markupAt(offset);
+    var out=M.filter(function(e){return e.payload.author==user.name});
+    if (user.admin) {
+      var merged=M.filter(function(e){return e.payload.author!=user.name});
+      if (!this.offsets) this.offsets=this.props.template.tokenize(this.props.page.inscription).offsets;
+      out=this.orMarkups(out,page.mergeMarkup(merged,this.offsets));
+    }
+    return out;
+  },
   toXML : function(page,opts) {
     if (!page) return [];
     var res=this.props.template.tokenize(page.inscription)
@@ -131,7 +155,7 @@ var surface = React.createClass({
       var tk=TK[i];
       var classes="",extraclass="";
       var markupclasses=[],appendtext="";
-      var M=page.markupAt(offsets[i]);
+      var M=this.getMarkups(page,offsets[i]);
       if (offsets[i]>=selstart && offsets[i]<selstart+sellength) extraclass+=' selected';
       //var R=page.revisionAt(i),
       //if (R.length) extraclass+=this.renderRevision(R[0],xml);
