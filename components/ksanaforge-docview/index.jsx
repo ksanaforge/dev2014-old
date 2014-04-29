@@ -1,4 +1,8 @@
 /** @jsx React.DOM */
+/*
+  maintain selection state of a surface
+  context menu
+*/
 var surface=require("docsurface"); 
 var bootstrap=require("bootstrap");
 var cssgen=require("./cssgen");
@@ -9,7 +13,7 @@ var docview = React.createClass({
   contextMenu:function() {
     if (this.props.template.contextmenu) {
       return this.props.template.contextmenu(
-        {ref:"menu",user:this.props.user, onPageAction:this.onPageAction}
+        {ref:"menu",user:this.props.user, action:this.onAction}
       );  
     } else {
       return <span></span>
@@ -24,21 +28,39 @@ var docview = React.createClass({
     }
   },
 
+  inserttext:function(start,len,text) {
+    var payload={type:"suggest",
+                  author:this.props.user.name,
+                  text:text,insert:true
+                };
 
-  onPageAction:function() {
-    var args = [],r;
+    this.props.page.clearMarkups(start,len,this.props.user.name);
+    this.props.page.addMarkup(start,len,payload);
+
+    this.setState({selstart:start+len,sellength:0,newMarkupAt:start});
+  },
+  onAction:function() {
+    var args = [],r,username=this.props.user.name;
+    var ss=this.state.selstart, sl=this.state.sellength;
+    var newstart=this.state.selstart+this.state.sellength;
+
     Array.prototype.push.apply( args, arguments );
-    var api=args.shift();
-    var func=this.props.page[api];
-    if (func) {
-      r=func.apply(this.props.page,args);
-      var newstart=this.state.selstart+this.state.sellength;
-      var newmarkupat= (api=="addMarkup")?this.state.selstart:-1;
-      this.setState({selstart:newstart,sellength:0,newMarkupAt:newmarkupat});
+    var action=args.shift();
+    if (action=="strikeout") {
+      this.props.page.strikeout(ss,sl,username);
+    } else if (action=="inserttext") {
+      this.inserttext(args[0],args[1],args[2]);
+    } else if (action=="addmarkup") {
+      var payload=args[0];
+      payload.author=this.props.user.name;
+      this.props.page.addMarkup(ss,sl,payload); 
+      this.setState({selstart:newstart,sellength:0,newMarkupAt:ss});
+    } else if (action=="clearmarkup") {
+      this.props.page.clearMarkups(ss,sl,username);
+      this.setState({selstart:newstart,sellength:0});
     } else {
-      console.error("cannot find function ",api);
+      return this.props.action.apply(this,arguments);
     }
-    return r;
   },
   closemenu:function() {
     this.refs.menu.getDOMNode().classList.remove("open");
@@ -68,7 +90,7 @@ var docview = React.createClass({
     }
 
     if (this.props.onSelection) {  
-      this.props.onSelection( this.onPageAction,start,len,x,y);
+      this.props.onSelection(start,len,x,y);
     } 
   },
   render: function() {
@@ -77,7 +99,7 @@ var docview = React.createClass({
       {this.contextMenu()}
        <surface page={this.props.page}
                 user={this.props.user}
-                action={this.props.action}
+                action={this.onAction}
                 template={this.props.template}
                 newMarkupAt={this.state.newMarkupAt}
                 selstart={this.state.selstart} 

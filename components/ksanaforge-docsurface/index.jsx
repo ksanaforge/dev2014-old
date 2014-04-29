@@ -4,13 +4,16 @@ var token = React.createClass({
     var opts={ className:this.props.cls,'data-n':this.props.n}
     if (this.props.appendtext) opts['data-to']=this.props.appendtext;
     return React.DOM.span(opts,this.props.ch);
-  }
-});
-var caret=require("./caret");
+  } 
+});  
+var caret=require("./caret");  
 var surface = React.createClass({
   componentWillUpdate:function(nextProps,nextState) {
     //close inlinemenu if page change
-    if (nextProps.page!=this.props.page) nextState.markup=null;
+    if (nextProps.page!=this.props.page) {
+      nextState.markup=null;
+      nextState.newMarkupAt=-1;
+    }
   },
   moveInputBox:function(rect) {
     var inputbox=this.refs.inputbox.getDOMNode();

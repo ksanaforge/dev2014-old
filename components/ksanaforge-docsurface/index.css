@@ -8,12 +8,11 @@
 .surface {font-size:200%;-webkit-user-select:text;font-family: "微軟正黑體", "Microsoft JhengHei", "新細明體", "PMingLiU", "細明體", "MingLiU", "標楷體", "DFKai-sb", serif;}
 .surface-caret-container {position:relative;width:6px;}
 .surface-inputbox {position:absolute;left:0;right:0;}
-.surface-caret {position:relative;background-color:gray;height:100%;
-	  -webkit-animation: fadein 0.75s ease-in alternate infinite;
-	  -webkit-filter: invert(100%);   filter: invert(100%);
+.surface-caret {position:relative;background-color:midnightblue;height:120%;
+	  -webkit-animation: fadein 1.5s ease-in alternate infinite;
 }
 .menuopened {background:LemonChiffon;}
-.selected {background: #32B7FD;}
+.selected {background: #32B7FD;height:120%;}
 @-webkit-keyframes rainbow {
   0% {border-color: hsl(0, 100%, 50%);}
   100% {border-color: hsl(255, 100%, 50%);}
