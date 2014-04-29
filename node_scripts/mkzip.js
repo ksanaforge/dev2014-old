@@ -78,21 +78,20 @@ var indexhtml='<html>\n<head>\n<meta charset="utf-8" />\n'+
 						'<link type="text/css" rel="stylesheet" href="build.css"/></head>\n'+
 						'<div id="main"></div>\n'+
 						'<script>window.nodeRequire=require;</script>\n'+
-						'<script src="build.min.js"></script>\n'+
+						'<script src="build.js"></script>\n'+
 						'</html>';
-var add_appfiles=function(appfolder,zip) {
+var add_appfiles=function(appfolder,zip,extras) {
 	zip.addData("index.html",indexhtml);
 	addfile(appfolder+"/index.css",1);
 	addfile(appfolder+"/package.json",1);
-	addfile(appfolder+"/build/build.min.js",2);
+	addfile(appfolder+"/build/build.js",2);
 	addfile(appfolder+"/build/build.css",2);
-	if (fs.existsSync(appfolder+"/mkzip.json")){
-		var deploy=require("../"+appfolder+"/mkzip.json");
-		if (deploy.files) addtozip(deploy.files , 1);
+	if (extras) {
+		if (extras.files) addtozip(extras.files , 1);
 		//array of node modules 
 		//['node_modules/yadb','node_modules/yase']
-		if (deploy.repos) addtozip(deploy.repos);
-	} 
+		if (extras.repos) addtozip(extras.repos);
+	}
 }
 
 var add_node_webkit=function() {
@@ -105,30 +104,70 @@ var add_node_webkit=function() {
   change package.json to "main": "../../cst/index.html",
   and put in node-webkit exe folder
 */
-var mkzip=function(appfolder,pf) {
+var changeSettings=function(fn) {
+	if (!fs.existsSync(fn)) return null;
+	var settings=JSON.parse(fs.readFileSync(fn,'utf8'));
+	var developer=settings.developer;
+	if (developer) {
+		settings.developer=false;
+		saveJson(fn,settings);
+		settings.developer=true;
+		return settings;
+	} else return null;
+}
+
+var changePackageJson=function(fn) {
+	if (!fs.existsSync(fn)) return null;
+	var packagejson=JSON.parse(fs.readFileSync(fn,'utf8'));
+	var fullscreen=packagejson.window.toolbar;
+	if (fullscreen) {
+		packagejson.window.toolbar=false;
+		saveJson(fn,packagejson);
+		packagejson.window.toolbar=true;
+		return packagejson;
+	} else return null;
+}
+var saveJson=function(fn,json) {
+	if (!fn || !json) return;
+	fs.writeFileSync(fn, JSON.stringify(json,'',' '),'utf8');
+}
+var mkzip=function(appfolder,pf,product) {
 	var starttime=new Date();
 	platform=pf || process.platform;
 
 	var date =new Date().toISOString().substring(0,10);
 	var folders=appfolder.split(path.sep);
 	var appname=folders[folders.length-1];
+	var extras=null;
+	if (fs.existsSync(appfolder+"/mkzip.json")){
+		extras=require(appfolder+"/mkzip.json");
+		product=product||extras.name||appname ;
+	} else {
+		product=product||appname;	
+	}
 	
+	var settings=changeSettings(appfolder+"/settings.json");
+	var packagejson=changePackageJson(appfolder+"/package.json");
+
 //	var shellscriptname='start-'+appname + shellscript[platform];
 	//create 
 	process.chdir("..");
-	add_appfiles(appname,zip);
+	add_appfiles(appname,zip,extras);
 	add_node_webkit();
 
 	console.log("");
-	console.log('.....Creating Zip file.....')
-	var zipname=appname +'-'+platform+'-'+date+'.zip';
+	var zipname=product +'-'+platform+'-'+date+'.zip';
+	console.log('.....Creating Zip file.....'+zipname);
 	zip.saveAs(zipname,function() {
 	   console.log('time elapsed in seconds', Math.round(new Date()-starttime)/1000);
 	   console.log("zip file created: ");
 	   console.log(zipname);
 	   process.chdir(appfolder);
+	   saveJson(appfolder+"/settings.json",settings);
+	   saveJson(appfolder+"/package.json",packagejson);
 	});
 	
+
 }
 
 

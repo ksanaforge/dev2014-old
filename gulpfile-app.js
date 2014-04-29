@@ -115,7 +115,7 @@ gulp.task('mkzip',['min'],function(){
   var appname=process.cwd();
   var argv = require('minimist')(process.argv.slice(2));
   var platform=argv['platform'] || process.platform;;
-  mkzip(appname,platform);
+  mkzip(appname,platform,argv['product']);
 })
 
 

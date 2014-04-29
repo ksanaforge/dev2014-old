@@ -64,13 +64,24 @@ var surface = React.createClass({
   }, 
   mouseup:function(e) {
     if (this.state.markup) return;
+
     //if (this.inInlineMenu(e.target))return;
     var sel=this.getSelection();
+
+    if (e.button==2 && this.state.sellength>0 && //if click inside existing selection
+        sel.start>=this.state.selstart && sel.start<=this.state.selstart+this.state.sellength) {
+      //reuse , don't change
+      sel.start=this.state.selstart;
+      sel.len=this.state.sellength;
+    } else {
+      this.setState({selstart:sel.start,sellength:sel.len});
+    }
+
     if (e.target.getAttribute("class")=="link") {
       var M=this.props.page.markupAt(sel.start);
       if (this.props.onLink) this.props.onLink(M[0].payload);
     } else {
-      this.props.onSelection(sel.start,sel.len,e.pageX,e.pageY);
+      this.props.onSelection(sel.start,sel.len,e.pageX,e.pageY,e);
     }
   },
   inlinemenuaction:function() {
@@ -133,6 +144,7 @@ var surface = React.createClass({
   getMarkups:function(page,offset) {
     var user=this.props.user;
     var M=page.markupAt(offset);
+    if (!M.length) return [];
     var out=M.filter(function(e){return e.payload.author==user.name});
     if (user.admin) {
       var merged=M.filter(function(e){return e.payload.author!=user.name});
@@ -195,9 +207,7 @@ var surface = React.createClass({
       }  
 
       markupclasses.sort();
-      if (M[j]==this.state.markup && this.state.markup) {
-        extraclass+=" menuopened "; 
-      }     
+
       if (markupclasses.length) tagset[markupclasses.join(",")]=true;
       var ch=tk;  
       if (ch==="\n") {ch="\u21a9";extraclass+=' br';}
@@ -223,7 +233,7 @@ var surface = React.createClass({
     );
   },
   getInitialState:function() {
-    return {uuid:'u'+Math.random().toString().substring(2), markup:null,newMarkupAt:-1};
+    return {selstart:0,sellength:0,uuid:'u'+Math.random().toString().substring(2), markup:null,newMarkupAt:-1};
   },
   componentDidUpdate:function() {
     if (this.props.scrollto) this.scrollToSelection();

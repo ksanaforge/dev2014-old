@@ -40,6 +40,9 @@ var docview = React.createClass({
     }
     return r;
   },
+  closemenu:function() {
+    this.refs.menu.getDOMNode().classList.remove("open");
+  }, 
   openmenu:function(x,y) {
     if (this.refs.menu) {
       var menu=this.refs.menu.getDOMNode();
@@ -48,17 +51,21 @@ var docview = React.createClass({
       menu.style.top=(y-this.getDOMNode().offsetTop)+'px'; 
     }
   },
-  onSelection:function(start,len,x,y) {
+  onSelection:function(start,len,x,y,e) {
     this.setState({selstart:start,sellength:len});
     if (this.refs.menu && this.refs.menu.onPopup) {
-      var context={
-        text:this.props.page.inscription.substr(start,len),
-        selstart:start,
-        sellength:len
+      if (len && e.button==2) {
+        var context={
+          text:this.props.page.inscription.substr(start,len),
+          selstart:start,
+          sellength:len
+        }
+        this.refs.menu.onPopup(context); //set menu context
+        setTimeout( this.openmenu.bind(this,x,y),200);
+      } else {
+        this.closemenu();
       }
-      this.refs.menu.onPopup(context);
     }
-    if (len) setTimeout( this.openmenu.bind(this,x,y),200);
 
     if (this.props.onSelection) {  
       this.props.onSelection( this.onPageAction,start,len,x,y);
