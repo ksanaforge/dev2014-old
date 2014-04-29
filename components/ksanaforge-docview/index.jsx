@@ -7,6 +7,12 @@ var surface=require("docsurface");
 var bootstrap=require("bootstrap");
 var cssgen=require("./cssgen");
 var docview = React.createClass({
+  componentWillUpdate:function(nextProps,nextState) {
+    if (nextProps.page!=this.props.page) {
+      nextState.selstart=0;
+      nextState.sellength=0;
+    }
+  },
   getInitialState: function() { 
     return {selstart:0, sellength:0};
   },
@@ -104,8 +110,7 @@ var docview = React.createClass({
                 newMarkupAt={this.state.newMarkupAt}
                 selstart={this.state.selstart} 
                 sellength={this.state.sellength}
-                onTagSet={this.onTagSet}
-                onSelection={this.onSelection}>
+                onTagSet={this.onTagSet}>
        </surface>
       </div>
     );
