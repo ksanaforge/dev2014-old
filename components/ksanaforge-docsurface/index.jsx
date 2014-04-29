@@ -36,8 +36,6 @@ var surface = React.createClass({
     if (length<0) {
             temp=end; end=start; start=end;
     }
-    //this.setState({selstart:start,sellength:length});
-    //this.props.onSelection(start,length);
     sel.empty();
     this.refs.surface.getDOMNode().focus();
     return {start:start,len:length};
@@ -85,7 +83,7 @@ var surface = React.createClass({
     if (e.target.getAttribute("class")=="link") {
       var M=this.props.page.markupAt(sel.start);
       if (this.props.onLink) this.props.onLink(M[0].payload);
-    } else {
+    } else {  
       this.props.onSelection(sel.start,sel.len,e.pageX,e.pageY,e);
     }
   },

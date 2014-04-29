@@ -12,7 +12,7 @@
 	  -webkit-animation: fadein 1.5s ease-in alternate infinite;
 }
 .menuopened {background:LemonChiffon;}
-.selected {background: #32B7FD;height:120%;}
+.selected {background: Highlight;height:120%;color:HighlightText;}
 @-webkit-keyframes rainbow {
   0% {border-color: hsl(0, 100%, 50%);}
   100% {border-color: hsl(255, 100%, 50%);}
