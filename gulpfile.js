@@ -6,6 +6,7 @@ var repos=require('./node_scripts/repos');
 //third party
 var gulp = require('gulp'); 
 var https = require('https');
+var http = require('http');
 var fs = require('fs');
 var fstream=require('fstream');
 var unzip=require('unzip');
@@ -38,12 +39,13 @@ gulp.task('install-node-webkit', function() {
 	var parent=nw.path.split('/');
 	parent.pop();
 	var parentfolder=parent.join('/');
-
+	var p=http;
+	if (nw.url.indexOf("https")==0) p=https;
 	if (parentfolder && !fs.existsSync(parentfolder)) fs.mkdirSync(parentfolder);
 	if (!fs.existsSync(nw.path)) fs.mkdirSync(nw.path);
 	var writeStream = fstream.Writer(nw.path);
 	var datalength=0;
-	var request = https.get(nw.url, function(response) {
+	var request = p.get(nw.url, function(response) {
 		response.on('data',function(chunk){
 			datalength+=chunk.length;
 			outback('downloading '+datalength);
