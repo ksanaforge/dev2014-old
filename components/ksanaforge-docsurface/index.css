@@ -10,6 +10,7 @@
 .surface-inputbox {position:absolute;left:0;right:0;}
 .surface-caret {position:relative;background-color:gray;height:100%;
 	  -webkit-animation: fadein 0.75s ease-in alternate infinite;
+	  -webkit-filter: invert(100%);   filter: invert(100%);
 }
 .menuopened {background:LemonChiffon;}
 .selected {background: #32B7FD;}

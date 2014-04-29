@@ -54,7 +54,7 @@ var docview = React.createClass({
   onSelection:function(start,len,x,y,e) {
     this.setState({selstart:start,sellength:len});
     if (this.refs.menu && this.refs.menu.onPopup) {
-      if (len && e.button==2) {
+      if (len && e && e.button==2) {
         var context={
           text:this.props.page.inscription.substr(start,len),
           selstart:start,

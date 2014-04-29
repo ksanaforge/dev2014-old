@@ -6,6 +6,7 @@ var token = React.createClass({
     return React.DOM.span(opts,this.props.ch);
   }
 });
+var caret=require("./caret");
 var surface = React.createClass({
   componentWillUpdate:function(nextProps,nextState) {
     //close inlinemenu if page change
@@ -61,18 +62,19 @@ var surface = React.createClass({
     } else {
       clearTimeout(this.inlinemenutimer);
     }
-  }, 
+  },
+
   mouseup:function(e) {
     if (this.state.markup) return;
 
     //if (this.inInlineMenu(e.target))return;
     var sel=this.getSelection();
 
-    if (e.button==2 && this.state.sellength>0 && //if click inside existing selection
-        sel.start>=this.state.selstart && sel.start<=this.state.selstart+this.state.sellength) {
+    if (e.button==2 && this.props.sellength>0 && //if click inside existing selection
+        sel.start>=this.props.selstart && sel.start<=this.props.selstart+this.state.sellength) {
       //reuse , don't change
-      sel.start=this.state.selstart;
-      sel.len=this.state.sellength;
+      sel.start=this.props.selstart;
+      sel.len=this.props.sellength;
     } else {
       this.setState({selstart:sel.start,sellength:sel.len});
     }
@@ -224,16 +226,27 @@ var surface = React.createClass({
   },  
   render: function() {
     var opts={selstart:this.props.selstart, sellength:this.props.sellength};
-    var xml=this.toXML(this.props.page,opts);    
+    var xml=this.toXML(this.props.page,opts); 
+ 
     return (
       <div  data-id={this.state.uuid} className="surface">
           {this.addInlinemenu()}
-          <div ref="surface" tabIndex="0" onMouseMove={this.mousemove} onMouseUp={this.mouseup}>{xml}</div>
+          <div ref="surface" tabIndex="0" 
+            onKeyDown={this.caret.keydown} 
+            onMouseMove={this.mousemove} 
+            onMouseUp={this.mouseup}>{xml}
+          </div>
+          <div ref="caretdiv" className="surface-caret-container">
+             <div ref="caret" className="surface-caret"></div>
+          </div>
       </div>
     );
   },
   getInitialState:function() {
-    return {selstart:0,sellength:0,uuid:'u'+Math.random().toString().substring(2), markup:null,newMarkupAt:-1};
+    return {uuid:'u'+Math.random().toString().substring(2), markup:null,newMarkupAt:-1};
+  },
+  componentWillMount:function() {
+    this.caret=new caret.Create(this);
   },
   componentDidUpdate:function() {
     if (this.props.scrollto) this.scrollToSelection();
@@ -244,7 +257,10 @@ var surface = React.createClass({
         ,300);
       this.setState({newMarkupAt:this.props.newMarkupAt})
     }
+    this.caret.show();
   }
+
+
 });
 
 module.exports=surface;
