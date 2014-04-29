@@ -55,6 +55,7 @@ var docview = React.createClass({
     var action=args.shift();
     if (action=="strikeout") {
       this.props.page.strikeout(ss,sl,username);
+      this.setState({selstart:newstart,sellength:0});
     } else if (action=="inserttext") {
       this.inserttext(args[0],args[1],args[2]);
     } else if (action=="addmarkup") {
