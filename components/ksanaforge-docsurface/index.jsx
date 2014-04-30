@@ -32,7 +32,8 @@ var surface = React.createClass({
       //      this.setState({selstart:start+1,sellength:0});
       return {start:start+s.innerText.length,len:0};
     }
-    var length=end-start+e.innerText.length  ;
+    var length=end-start;
+    if (range.endOffset>range.startOffset) length++;
     if (length<0) {
             temp=end; end=start; start=end;
     }
