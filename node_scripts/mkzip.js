@@ -108,7 +108,7 @@ var changeSettings=function(fn) {
 	if (!fs.existsSync(fn)) return null;
 	var settings=JSON.parse(fs.readFileSync(fn,'utf8'));
 	var developer=settings.developer;
-	settings.buildDateTime=new Date();	
+	settings.buildDateTime=(new Date()).toString();	
 	if (developer) {
 		settings.developer=false;
 		saveJson(fn,settings);
