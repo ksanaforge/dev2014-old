@@ -47,6 +47,7 @@ var docview = React.createClass({
     this.setState({selstart:start+len,sellength:0,newMarkupAt:start});
   },
   onAction:function() {
+    var maxlen=100;
     var args = [],r,username=this.props.user.name;
     var ss=this.state.selstart, sl=this.state.sellength;
     var newstart=this.state.selstart+this.state.sellength;
@@ -54,18 +55,22 @@ var docview = React.createClass({
     Array.prototype.push.apply( args, arguments );
     var action=args.shift();
     if (action=="strikeout") {
+      if (sl>maxlen) return;
       this.props.page.strikeout(ss,sl,username);
       this.setState({selstart:newstart,sellength:0});
     } else if (action=="inserttext") {
+      if (args[1]>maxlen) return;
       this.inserttext(args[0],args[1],args[2]);
-    } else if (action=="addmarkup") {
+    } else if (action=="addmarkup") { 
       var payload=args[0];
       payload.author=this.props.user.name;
+      if (sl>maxlen) return;
       this.props.page.addMarkup(ss,sl,payload); 
       this.setState({selstart:newstart,sellength:0,newMarkupAt:ss});
     } else if (action=="addmarkupat") {
       var payload=args[2];
       payload.author=this.props.user.name;
+      if (args[1]>maxlen) return;
       this.props.page.addMarkup(args[0],args[1],payload); 
       this.setState({selstart:newstart,sellength:0,newMarkupAt:null});
     } else if (action=="clearmarkup") {

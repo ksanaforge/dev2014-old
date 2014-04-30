@@ -76,7 +76,12 @@ var yase=function(){
   } else {
     //cannot call document services in server mode
     //for node_server , use socket.io to talk to server-side yase_api.js
-    return require('./rpc_yase');
+    var api=require('./rpc_yase');
+    var document_api=require('./rpc_document');
+    for (var i in document_api) {
+      api[i]=document_api[i];
+    }
+    return api;
   }
 }
 

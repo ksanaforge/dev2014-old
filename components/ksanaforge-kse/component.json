@@ -8,5 +8,6 @@
   "development": {},
   "license": "MIT",
   "main": "index.js",
-  "scripts": ["index.js","rpc.js","rpc_yase.js","yase.js","yase_promise.js"]
+  "scripts": ["index.js","rpc.js",
+  "rpc_yase.js","rpc_document.js","yase.js","yase_promise.js"]
 }
