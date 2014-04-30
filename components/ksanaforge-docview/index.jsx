@@ -63,6 +63,11 @@ var docview = React.createClass({
       payload.author=this.props.user.name;
       this.props.page.addMarkup(ss,sl,payload); 
       this.setState({selstart:newstart,sellength:0,newMarkupAt:ss});
+    } else if (action=="addmarkupat") {
+      var payload=args[2];
+      payload.author=this.props.user.name;
+      this.props.page.addMarkup(args[0],args[1],payload); 
+      this.setState({selstart:newstart,sellength:0,newMarkupAt:null});
     } else if (action=="clearmarkup") {
       this.props.page.clearMarkups(ss,sl,username);
       this.setState({selstart:newstart,sellength:0});

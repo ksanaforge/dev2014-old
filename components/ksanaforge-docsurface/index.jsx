@@ -45,10 +45,14 @@ var surface = React.createClass({
     var n=parseInt(n);
     var m=this.getMarkups(this.props.page,n);
     if (!m.length || !this.props.template.inlinemenu) return;
-    var m=m[0];
-    var menu=this.props.template.inlinemenu[m.payload.type];
+    var mm=m[0];
+    for (var i=1;i<m.length;i++) {
+      if (m[i].start==n) mm=m[i];
+    }
+    
+    var menu=this.props.template.inlinemenu[mm.payload.type];
     if (menu) {
-      this.setState({markup:m});
+      this.setState({markup:mm});
     }
   },
   mousemove:function(e) {
@@ -139,21 +143,27 @@ var surface = React.createClass({
   },
   orMarkups:function(m1,m2) { // m1 has higher priority
     var out=[],positions={};
-    m1.map(function(m){ positions[m.start]=true});
+    m1.map(function(m){ 
+      out.push(m);
+      positions[m.start]=true}
+    );
+
     for (var i=0;i<m2.length;i++) {
-      if (!positions[m2[i].start]) m1.push(m2[i]);
+      if (!positions[m2[i].start]) out.push(m2[i]);
     }
-    return m1;
+    return out;
   },
   getMarkups:function(page,offset) {
     var user=this.props.user;
     var M=page.markupAt(offset);
     if (!M.length) return [];
-    var out=M.filter(function(e){return e.payload.author==user.name});
+    var out=M.filter(function(e){return e.payload.author===user.name});
     if (user.admin) {
       var merged=M.filter(function(e){return e.payload.author!=user.name});
       if (!this.offsets) this.offsets=this.props.template.tokenize(this.props.page.inscription).offsets;
-      out=this.orMarkups(out,page.mergeMarkup(merged,this.offsets));
+      merged=page.mergeMarkup(merged,this.offsets);
+      merged=merged.filter(function(e){return e.start==offset});
+      out=this.orMarkups(out,merged);
     }
     return out;
   },
