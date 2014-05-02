@@ -9,16 +9,28 @@ var token = React.createClass({
 var caret=require("./caret");  
 var surface = React.createClass({
   componentWillUpdate:function(nextProps,nextState) {
-    //close inlinemenu if page change
-    if (nextProps.page!=this.props.page) {
+    if (nextProps.selstart!=this.props.selstart
+      && nextProps.selstart!=this.props.selstart+this.props.sellength) {
       nextState.markup=null;
-      nextState.newMarkupAt=-1;
+      this.inlinemenuopened=null;
     }
   },
   moveInputBox:function(rect) {
     var inputbox=this.refs.inputbox.getDOMNode();
     var surfacerect=this.refs.surface.getDOMNode().getBoundingClientRect();
     inputbox.focus();
+  },
+  showinlinemenu:function() {
+    if (!this.refs.inlinemenu) return;
+    var mm=this.state.markup;
+    var domnode=this.getDOMNode().querySelector('span[data-n="'+mm.start+'"]');
+    if (!domnode) return;
+
+    var menu=this.refs.inlinemenu.getDOMNode();
+    menu.style.left=domnode.offsetLeft - this.getDOMNode().offsetLeft ;
+    menu.style.top=domnode.offsetTop - this.getDOMNode().offsetTop + domnode.offsetHeight +5 ;
+    menu.style.display='inline';
+    this.inlinemenuopened=menu;
   },
   getSelection:function() {
     var sel = getSelection();
@@ -43,7 +55,7 @@ var surface = React.createClass({
   },
   openinlinemenu:function(n) {
     var n=parseInt(n);
-    var m=this.getMarkups(this.props.page,n);
+    var m=this.getMarkupsAt(n);
     if (!m.length || !this.props.template.inlinemenu) return;
     var mm=m[0];
     for (var i=1;i<m.length;i++) {
@@ -56,10 +68,9 @@ var surface = React.createClass({
     }
   },
   hasMarkupAt:function(n) {
-    return this.getMarkups(this.props.page,n).length>0;
+    return this.getMarkupsAt(n).length>0;
   },
   tokenclicked:function(e) {
-   if (this.state.markup) return;
     if (!e.target.attributes['data-n']) return;
     var n=e.target.attributes['data-n'].value;
     if (n) {
@@ -67,32 +78,16 @@ var surface = React.createClass({
       return true;
     } else return false;
   },
-  mousemove:function(e) {
-    /*
-    if (this.state.markup) return;
-    if (!e.target.attributes['data-n']) return;
-    var n=e.target.attributes['data-n'].value;
-    if (n) {
-      if (this.inlinemenutimer) {
-        clearTimeout(this.inlinemenutimer);
-        this.inlinemenutimer=null;
-      };
-      this.inlinemenutimer=setTimeout(this.openinlinemenu.bind(this,[n]),250);
-    } else {
-      clearTimeout(this.inlinemenutimer);
-    }
-    */
-  },
 
   mouseup:function(e) {
-    if (this.state.markup) return;
+    if (this.inlinemenuopened) return;
 
     //if (this.inInlineMenu(e.target))return;
     var sel=this.getSelection();
     if (sel.len==0 && e.button==0 ) { //use e.target
       var n=e.target.attributes['data-n'];
       if (n) {
-        this.setState({selstart:parseInt(n.value),sellength:0});
+        //this.setState({selstart:parseInt(n.value),sellength:0});
         this.props.onSelection(parseInt(n.value),0,e.pageX,e.pageY,e);
         return;
       }
@@ -104,7 +99,7 @@ var surface = React.createClass({
       sel.start=this.props.selstart;
       sel.len=this.props.sellength;
     } else {
-      this.setState({selstart:sel.start,sellength:sel.len});
+      //this.setState({selstart:sel.start,sellength:sel.len});
     }
 
     if (e.target.getAttribute("class")=="link") {
@@ -115,23 +110,17 @@ var surface = React.createClass({
     }
   },
   closeinlinemenu:function() {
-    this.setState({markup:null});
+    if (this.inlinemenuopened) {
+      this.inlinemenuopened.style.display='none';
+    }
+    this.inlinemenuopened=false;
+    this.refs.surface.getDOMNode().focus();
+    this.setState({markup:false})
   },
   inlinemenuaction:function() {
     this.props.action.apply(this.props,arguments);
     this.closeinlinemenu();
   },
-  moveInlineMenu:function() {
-    if (!this.state.markup) return;
-    var m=this.state.markup;
-    var domnode=this.getDOMNode().querySelector('span[data-n="'+m.start+'"]');
-    if (!domnode) return;
-    var menu=this.refs.inlinemenu.getDOMNode();
-    menu.style.left=domnode.offsetLeft - this.getDOMNode().offsetLeft ;
-    menu.style.top=domnode.offsetTop - this.getDOMNode().offsetTop + domnode.offsetHeight +5 ;
-    menu.style.display='inline';
-    
-  },  
   addInlinemenu:function() {
     if (!this.props.template.inlinemenu) return null;
     if (!this.state.markup) return null;
@@ -166,33 +155,12 @@ var surface = React.createClass({
       //if (R[0].start!=i)replaceto="";
     return extraclass;
   },
-  orMarkups:function(m1,m2) { // m1 has higher priority
-    var out=[],positions={};
-    m1.map(function(m){ 
-      out.push(m);
-      positions[m.start]=true}
-    );
 
-    for (var i=0;i<m2.length;i++) {
-      if (!positions[m2[i].start]) out.push(m2[i]);
-    }
-    return out;
+  getMarkupsAt:function(offset) {
+    return this.props.action("getmarkupsat",offset);
   },
-  getMarkups:function(page,offset) {
-    var user=this.props.user;
-    var M=page.markupAt(offset);
-    if (!M.length) return [];
-    var out=M.filter(function(e){return e.payload.author===user.name});
-    if (user.admin) {
-      var merged=M.filter(function(e){return e.payload.author!=user.name});
-      if (!this.offsets) this.offsets=this.props.template.tokenize(this.props.page.inscription).offsets;
-      merged=page.mergeMarkup(merged,this.offsets);
-      merged=merged.filter(function(e){return e.start==offset});
-      out=this.orMarkups(out,merged);
-    }
-    return out;
-  },
-  toXML : function(page,opts) {
+  toXML : function(opts) {
+    var page=this.props.page;
     if (!page) return [];
     var res=this.props.template.tokenize(page.inscription)
     var TK=res.tokens;
@@ -206,7 +174,7 @@ var surface = React.createClass({
       var tk=TK[i];
       var classes="",extraclass="";
       var markupclasses=[],appendtext="";
-      var M=this.getMarkups(page,offsets[i]);
+      var M=this.getMarkupsAt(offsets[i]);
       if (offsets[i]>=selstart && offsets[i]<selstart+sellength) extraclass+=' selected';
       //var R=page.revisionAt(i),
       //if (R.length) extraclass+=this.renderRevision(R[0],xml);
@@ -263,7 +231,7 @@ var surface = React.createClass({
   },  
   render: function() {
     var opts={selstart:this.props.selstart, sellength:this.props.sellength};
-    var xml=this.toXML(this.props.page,opts); 
+    var xml=this.toXML(opts); 
  
     return (
       <div  data-id={this.state.uuid} className="surface">
@@ -281,7 +249,7 @@ var surface = React.createClass({
     );
   },
   getInitialState:function() {
-    return {uuid:'u'+Math.random().toString().substring(2), markup:null,newMarkupAt:-1};
+    return {uuid:'u'+Math.random().toString().substring(2), markup:null};
   },
   componentWillMount:function() {
     this.caret=new caret.Create(this);
@@ -289,17 +257,9 @@ var surface = React.createClass({
   },
   componentDidUpdate:function() {
     if (this.props.scrollto) this.scrollToSelection();
-    this.moveInlineMenu();
-    if (this.props.newMarkupAt!=this.state.newMarkupAt&&this.props.newMarkupAt>-1) {
-      setTimeout(
-        this.openinlinemenu.bind(this,this.props.newMarkupAt)
-        ,300);
-      this.setState({newMarkupAt:this.props.newMarkupAt})
-    }
     this.caret.show();
+    this.showinlinemenu();
   }
-
-
 });
 
 module.exports=surface;

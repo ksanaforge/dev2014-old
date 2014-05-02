@@ -69,6 +69,7 @@ var Create=function(_surface) {
   var moveCaretUp=function() {
     var n=beginOfLine(),ox=caretnode.offsetLeft, oy=caretnode.offsetTop;
     var mindis=100000000, closest=null;
+    if (!n) return;
     if (n.previousSibling==null) return;//top line
     n=n.previousSibling;
     while (n) {
@@ -81,6 +82,7 @@ var Create=function(_surface) {
 
   var moveCaretDown=function(){
     var n=endOfLine(),ox=caretnode.offsetLeft, oy=caretnode.offsetTop;
+    if (!n) return;
     var mindis=100000000, closest=null;
     if (n.nextSibling==null) return;//top line
     n=n.nextSibling;
@@ -129,10 +131,24 @@ var Create=function(_surface) {
   }
 
 	this.keydown=function(e) {
+
     shiftkey=e.shiftKey;
     var kc=e.keyCode;
-    if (kc==37) moveCaret(caretnode.previousSibling);
-    else if (kc==39) moveCaret(caretnode.nextSibling);
+    if (kc==37) {
+      if (e.ctrlKey) {
+        if (!surface.inlinemenuopened) surface.props.action("prevmistake");
+      } else {
+        moveCaret(caretnode.previousSibling);
+      }
+    }
+    else if (kc==39) {
+      if (e.ctrlKey) {
+        if (!surface.inlinemenuopened) surface.props.action("nextmistake");
+      } else {
+        moveCaret(caretnode.nextSibling);  
+      }
+      
+    }
     else if (kc==40) moveCaretDown();
     else if (kc==38) moveCaretUp();
     else if (kc==46) strikeout();
@@ -141,7 +157,7 @@ var Create=function(_surface) {
     else if (kc==32) spacebar();
     else if (kc==27) surface.closeinlinemenu();
 
-    updateSelStart();
+    if (kc>=27&&kc<50)  updateSelStart();
 	}	
   this.show=function() {
     //this.refs.surface.getDOMNode().focus();

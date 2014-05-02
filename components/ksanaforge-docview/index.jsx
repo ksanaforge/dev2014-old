@@ -12,10 +12,50 @@ var docview = React.createClass({
     if (nextProps.page!=this.props.page) {
       nextState.selstart=0;
       nextState.sellength=0;
+      nextState.newMarkupAt=null;
+    }
+  },
+  componentDidUpdate:function() {
+    if (this.state.newMarkupAt) {
+      this.refs.surface.openinlinemenu(this.state.newMarkupAt);
     }
   },
   getInitialState: function() { 
-    return {selstart:0, sellength:0};
+    return {selstart:0, sellength:0,newMarkupAt:null};
+  },
+  orMarkups:function(m1,m2) { // m1 has higher priority
+    var out=[],positions={};
+    m1.map(function(m){ 
+      out.push(m);
+      positions[m.start]=true}
+    );
+
+    for (var i=0;i<m2.length;i++) {
+      if (!positions[m2[i].start]) out.push(m2[i]);
+    }
+    return out;
+  },  
+  getMarkups:function(M,offset) { //create dynamic markups from other users
+    var page=this.props.page;
+    var user=this.props.user;
+    M=M||page.filterMarkup(function(){return true});
+    if (!M.length) return []; 
+    var out=M.filter(function(e){return e.payload.author===user.name});
+    if (user.admin) {
+      var merged=M.filter(function(e){return e.payload.author!=user.name});
+      if (!this.offsets) this.offsets=this.props.template.tokenize(this.props.page.inscription).offsets;
+      merged=page.mergeMarkup(merged,this.offsets);
+      if (typeof offset!='undefined'){
+        merged=merged.filter(function(e){return e.start==offset});
+      }
+      out=this.orMarkups(out,merged);
+      out.sort(function(m1,m2){return m1.start-m2.start});
+    }
+    return out;
+  } , 
+  getMarkupsAt:function(offset) {
+    var M=this.props.page.markupAt(offset);
+    return this.getMarkups(M);
   },
   contextMenu:function() {
     if (this.props.template.contextmenu) {
@@ -45,6 +85,40 @@ var docview = React.createClass({
     this.props.page.addMarkup(start,len,payload);
 
     this.setState({selstart:start+len,sellength:0,newMarkupAt:start});
+  },
+  findMistake:function(direction) {
+    var sel={start:0,len:0};
+    var M=this.getMarkups();
+    var s=this.state.selstart+this.state.sellength;
+    if (!M.length) return sel;
+    if (direction>0) {
+      for (var i=0;i<M.length;i++) {
+        if (M[i].start>=s) {
+          sel.start=M[i].start;sel.len=M[i].len;
+          break;
+        };
+      }
+    } else if (direction<0) {
+      for (var i=M.length-1;i>0;i--) {
+        if (M[i].start<s) {
+          sel.start=M[i].start;sel.len=M[i].len;
+          break;
+        };
+      };
+    }
+    return sel;
+  },
+  goPrevMistake:function() {
+    var sel=this.findMistake(-1);
+    if (sel) {
+      this.setState({selstart:sel.start,sellength:sel.len,newMarkupAt:sel.start});
+    }
+  },
+  goNextMistake:function() {
+    var sel=this.findMistake(1);
+    if (sel) {
+      this.setState({selstart:sel.start,sellength:sel.len,newMarkupAt:sel.start});
+    }
   },
   onAction:function() {
     var maxlen=100;
@@ -76,6 +150,8 @@ var docview = React.createClass({
     } else if (action=="clearmarkup") {
       this.props.page.clearMarkups(ss,sl,username);
       this.setState({selstart:newstart,sellength:0});
+    } else if (action=="getmarkupsat") {
+      return this.getMarkupsAt(args[0]);
     } else {
       return this.props.action.apply(this,arguments);
     }
@@ -92,7 +168,7 @@ var docview = React.createClass({
     }
   },
   onSelection:function(start,len,x,y,e) {
-    this.setState({selstart:start,sellength:len});
+    this.setState({selstart:start,sellength:len,newMarkupAt:null});
     if (this.refs.menu && this.refs.menu.onPopup) {
       if (len && e && e.button==2) {
         var context={
@@ -115,11 +191,10 @@ var docview = React.createClass({
     return (
       <div> 
       {this.contextMenu()}
-       <surface page={this.props.page}
+       <surface ref="surface" page={this.props.page}
                 user={this.props.user}
                 action={this.onAction}
                 template={this.props.template}
-                newMarkupAt={this.state.newMarkupAt}
                 selstart={this.state.selstart} 
                 sellength={this.state.sellength}
                 onSelection={this.onSelection}
