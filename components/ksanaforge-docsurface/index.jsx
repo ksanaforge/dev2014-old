@@ -94,7 +94,7 @@ var surface = React.createClass({
     }
     if (!sel) return;
     if (e.button==2 && this.props.sellength>0 && //if click inside existing selection
-        sel.start>=this.props.selstart && sel.start<=this.props.selstart+this.state.sellength) {
+        sel.start>=this.props.selstart && sel.start<=this.props.selstart+this.props.sellength) {
       //reuse , don't change
       sel.start=this.props.selstart;
       sel.len=this.props.sellength;
