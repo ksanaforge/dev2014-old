@@ -1,0 +1,4 @@
+{
+	"repos":["node_modules/serialport"],
+	"files":["eforthKTTY/conn.js","eforthKTTY/lib.js","eforthKTTY/settings.js"]
+}

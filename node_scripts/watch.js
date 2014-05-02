@@ -1,4 +1,5 @@
-var nodeRequire=require;
+// watch.js // 
+nodeRequire=require // cannot be removed
 var fs=nodeRequire('fs');
 var gui = global.window.nwDispatcher.requireNwGui();
 var sep=require('path').sep;

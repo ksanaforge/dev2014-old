@@ -1,0 +1,18 @@
+A. to update
+01. cd dev2014> git pull
+02. cd dev2014\ksanaforge-workshop> git pull
+03. cd dev2014\node_modules\ksana-document> git pull
+
+B. to run
+01. cd dev2014\ksanaforge-workshop
+02. to open dev2014\ksanaforge-workshop\index.html
+    type 'gulp' or 'node ..\node_modules\gulp\bin\gulp.js'
+03. *.js 
+run dev2014\ksanaforge-workshop\gulpfile.js
+  run dev2014\gulpfile-app.js
+
+dev2014\ksanaforge-workshop\index.html
+dev2014\nodemain.js
+component.json ==> "main": "index.js"
+index.js ==> boot("ksanaforge-workshop","main","main")
+components\ksanaforge-workshop-main\index.jsx
