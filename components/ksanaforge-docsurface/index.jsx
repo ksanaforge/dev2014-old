@@ -55,7 +55,20 @@ var surface = React.createClass({
       this.setState({markup:mm});
     }
   },
+  hasMarkupAt:function(n) {
+    return this.getMarkups(this.props.page,n).length>0;
+  },
+  tokenclicked:function(e) {
+   if (this.state.markup) return;
+    if (!e.target.attributes['data-n']) return;
+    var n=e.target.attributes['data-n'].value;
+    if (n) {
+      this.openinlinemenu(n);
+      return true;
+    } else return false;
+  },
   mousemove:function(e) {
+    /*
     if (this.state.markup) return;
     if (!e.target.attributes['data-n']) return;
     var n=e.target.attributes['data-n'].value;
@@ -68,6 +81,7 @@ var surface = React.createClass({
     } else {
       clearTimeout(this.inlinemenutimer);
     }
+    */
   },
 
   mouseup:function(e) {
@@ -75,6 +89,14 @@ var surface = React.createClass({
 
     //if (this.inInlineMenu(e.target))return;
     var sel=this.getSelection();
+    if (sel.len==0 && e.button==1 ) { //use e.target
+      var n=e.target.attributes['data-n'];
+      if (n) {
+        this.setState({selstart:parseInt(n.value),sellength:0});
+        this.props.onSelection(parseInt(n.value),0,e.pageX,e.pageY,e);
+        return;
+      }
+    }
     if (!sel) return;
     if (e.button==2 && this.props.sellength>0 && //if click inside existing selection
         sel.start>=this.props.selstart && sel.start<=this.props.selstart+this.state.sellength) {
@@ -245,8 +267,9 @@ var surface = React.createClass({
           {this.addInlinemenu()}
           <div ref="surface" tabIndex="0" 
             onKeyDown={this.caret.keydown} 
-            onMouseMove={this.mousemove} 
-            onMouseUp={this.mouseup}>{xml}
+            onClick={this.tokenclicked} 
+            onMouseUp={this.mouseup}
+            >{xml}
           </div>
           <div ref="caretdiv" className="surface-caret-container">
              <div ref="caret" className="surface-caret"></div>
@@ -259,6 +282,7 @@ var surface = React.createClass({
   },
   componentWillMount:function() {
     this.caret=new caret.Create(this);
+
   },
   componentDidUpdate:function() {
     if (this.props.scrollto) this.scrollToSelection();

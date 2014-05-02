@@ -116,6 +116,18 @@ var Create=function(_surface) {
     surface.props.action("inserttext",sel.start,len,text);
   };
 
+  var spacebar=function() {
+    moveCaret(caretnode.previousSibling);
+    var sel=selstartFromCaret();
+    moveCaret(caretnode.nextSibling);
+
+    if (surface.hasMarkupAt(sel.start)) {
+      surface.openinlinemenu(sel.start);
+    } else {
+      inserttext();
+    }
+  }
+
 	this.keydown=function(e) {
     shiftkey=e.shiftKey;
     var kc=e.keyCode;
@@ -126,7 +138,7 @@ var Create=function(_surface) {
     else if (kc==46) strikeout();
     else if (kc==36) moveCaret(beginOfLine());
     else if (kc==35) moveCaret(endOfLine());
-    else if (kc==32) inserttext("");
+    else if (kc==32) spacebar();
 
     updateSelStart();
 	}	
