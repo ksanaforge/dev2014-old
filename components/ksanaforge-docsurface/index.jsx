@@ -89,7 +89,7 @@ var surface = React.createClass({
 
     //if (this.inInlineMenu(e.target))return;
     var sel=this.getSelection();
-    if (sel.len==0 && e.button==1 ) { //use e.target
+    if (sel.len==0 && e.button==0 ) { //use e.target
       var n=e.target.attributes['data-n'];
       if (n) {
         this.setState({selstart:parseInt(n.value),sellength:0});
@@ -114,9 +114,12 @@ var surface = React.createClass({
       this.props.onSelection(sel.start,sel.len,e.pageX,e.pageY,e);
     }
   },
+  closeinlinemenu:function() {
+    this.setState({markup:null});
+  },
   inlinemenuaction:function() {
     this.props.action.apply(this.props,arguments);
-    this.setState({markup:null});
+    this.closeinlinemenu();
   },
   moveInlineMenu:function() {
     if (!this.state.markup) return;
