@@ -34,6 +34,7 @@ var surface = React.createClass({
   },
   getSelection:function() {
     var sel = getSelection();
+    if (!sel.rangeCount) return;
     var range = sel.getRangeAt(0);
     var s=range.startContainer.parentElement;
     var e=range.endContainer.parentElement;
@@ -84,6 +85,7 @@ var surface = React.createClass({
 
     //if (this.inInlineMenu(e.target))return;
     var sel=this.getSelection();
+    if (!sel) return;
     if (sel.len==0 && e.button==0 ) { //use e.target
       var n=e.target.attributes['data-n'];
       if (n) {
