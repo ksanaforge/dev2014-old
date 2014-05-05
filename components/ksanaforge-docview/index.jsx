@@ -52,11 +52,11 @@ var docview = React.createClass({
       out.sort(function(m1,m2){return m1.start-m2.start});
     }
     return out;
-  } , 
+  } ,  
   getMarkupsAt:function(offset) {
     var M=this.props.page.markupAt(offset);
-    return this.getMarkups(M);
-  },
+    return this.getMarkups(M,offset);
+  },  
   contextMenu:function() {
     if (this.props.template.contextmenu) {
       return this.props.template.contextmenu(

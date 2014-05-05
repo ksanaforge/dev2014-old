@@ -21,7 +21,9 @@ var Tabui = React.createClass({
     )
   },
   tabcontent:function(T) {
-    return <div key={"C"+T.id} data-id={"C-"+T.id} className={"tab-pane"}>{T.content(T.params)}</div>
+    if (T.params) T.params.tab = T;
+    return <div ref={"C"+T.id} key={"C"+T.id} data-id={"C-"+T.id} 
+    className={"tab-pane"}>{T.content(T.params)}</div>
   },
 
   render:function() {
@@ -45,8 +47,15 @@ var Tabui = React.createClass({
     var id=anchor.attributes['data-id'].value;
     this.goTab(id);
   },
-  goTab:function(id) {
+  goTab:function(id,params) {
     $(this.refs[id].getDOMNode()).find("a").tab('show');
+    var activated=this.props.tabs.filter(function(t){return t.id==id});
+    if (activated.length && activated[0].params&&
+      activated[0].params.tab &&
+      activated[0].params.tab.instance&&
+      activated[0].params.tab.instance.onShow) {
+      activated[0].params.tab.instance.onShow(params);
+    }
   },
   goActiveTab:function() {
     var goTab=this.goTab;

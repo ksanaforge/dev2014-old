@@ -13,7 +13,7 @@ var surface = React.createClass({
       && nextProps.selstart!=this.props.selstart+this.props.sellength) {
       nextState.markup=null;
       this.inlinemenuopened=null;
-    }
+    } 
   },
   moveInputBox:function(rect) {
     var inputbox=this.refs.inputbox.getDOMNode();
