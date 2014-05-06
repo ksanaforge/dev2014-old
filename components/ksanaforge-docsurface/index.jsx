@@ -62,8 +62,9 @@ var surface = React.createClass({
     if (start==end && start+selectionlength==nextstart) {//select a token
       length=1;
     } else {
-      length=end-start+1;
-      if (range.endOffset>range.startOffset &&!length) length=1;
+      length=end-start;
+      if (length) length++;
+      //if (range.endOffset>range.startOffset &&!length) length=1;
       if (length<0) {
           temp=end; end=start; start=end;
       }
