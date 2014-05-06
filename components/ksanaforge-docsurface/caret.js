@@ -162,7 +162,7 @@ var Create=function(_surface) {
   this.show=function() {
     //this.refs.surface.getDOMNode().focus();
     var c=surface.refs.surface.getDOMNode().querySelector(
-      'span[data-n="'+(surface.props.selstart+surface.props.sellength)+'"]');
+      'span[data-n="'+(surface.props.selstart)+'"]');
     moveCaret(c);
   }
 

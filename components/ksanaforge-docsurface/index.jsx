@@ -32,7 +32,7 @@ var surface = React.createClass({
     menu.style.display='inline';
     this.inlinemenuopened=menu;
   },
-  getSelection:function() {
+  getRange:function() {
     var sel = getSelection();
     if (!sel.rangeCount) return;
     var range = sel.getRangeAt(0);
@@ -41,15 +41,34 @@ var surface = React.createClass({
     if (s.nodeName!='SPAN' || e.nodeName!='SPAN') return;
     var start=parseInt(s.getAttribute('data-n'),10);
     var end=parseInt(e.getAttribute('data-n'),10);
-    if (start==end && sel.anchorOffset==1) {
-      //      this.setState({selstart:start+1,sellength:0});
-      return {start:start+s.innerText.length,len:0};
+    return [start,end];
+  },
+  getSelection:function() {
+    R=this.getRange();
+    if (!R) return;
+    var start=R[0];
+    var end=R[1];
+    var length=0;
+    var sel = getSelection();
+    if (!sel.rangeCount) return;
+    var range = sel.getRangeAt(0);    
+    var s=range.startContainer.parentElement;
+    var e=range.startContainer.parentElement;
+    var n=e.nextSibling,nextstart=0;
+    if (n.nodeName=="SPAN") {
+      nextstart=parseInt(n.getAttribute('data-n'),10);  
     }
-    var length=end-start;
-    if (range.endOffset>range.startOffset &&!length) length=1;
-    if (length<0) {
-            temp=end; end=start; start=end;
+    var selectionlength=sel.extentOffset-sel.anchorOffset;
+    if (start==end && start+selectionlength==nextstart) {//select a token
+      length=1;
+    } else {
+      length=end-start+1;
+      if (range.endOffset>range.startOffset &&!length) length=1;
+      if (length<0) {
+          temp=end; end=start; start=end;
+      }
     }
+
     sel.empty();
     this.refs.surface.getDOMNode().focus();
     return {start:start,len:length};
@@ -79,8 +98,21 @@ var surface = React.createClass({
       return true;
     } else return false;
   },
-
-  mouseup:function(e) {
+  mouseDown:function(e) {
+    if(e.button === 0) this.leftMButtonDown = true;
+  },
+  mouseMove:function(e) {
+    if (!this.leftMButtonDown) return;
+    var sel=this.getRange();
+    if (!sel) return;
+    if (sel[0]!=this.laststart || this.lastend!=sel[1]) {
+      this.props.action("makingselection",sel[0],sel[1]);
+    }
+    this.laststart=sel[0];
+    this.lastend=sel[1];
+  },
+  mouseUp:function(e) {
+    this.leftMButtonDown=false;
     if (this.inlinemenuopened) return;
 
     //if (this.inInlineMenu(e.target))return;
@@ -241,8 +273,10 @@ var surface = React.createClass({
           <div ref="surface" tabIndex="0" 
             onKeyDown={this.caret.keydown} 
             onClick={this.tokenclicked} 
-            onMouseUp={this.mouseup}
-            >{xml}
+            onMouseDown={this.mouseDown}
+            onMouseUp={this.mouseUp}
+            onMouseMove={this.mouseMove}
+            >{xml} 
           </div>
           <div ref="caretdiv" className="surface-caret-container">
              <div ref="caret" className="surface-caret"></div>

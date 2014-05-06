@@ -7,6 +7,12 @@ var surface=require("docsurface");
 var bootstrap=require("bootstrap");
 var cssgen=require("./cssgen");
 var docview = React.createClass({
+  shouldComponentUpdate:function(nextProps,nextState) {
+    var p=this.props,np=nextProps;
+    var s=this.state,ns=nextState;
+    return (p.page!=np.page || p.pageid!=np.pageid ||
+     s.selstart!=ns.selstart || s.sellength!=ns.sellength);
+  },
   componentWillUpdate:function(nextProps,nextState) {
 
     if (nextProps.page!=this.props.page) {
@@ -158,7 +164,8 @@ var docview = React.createClass({
   },
   closemenu:function() {
     this.refs.menu.getDOMNode().classList.remove("open");
-  }, 
+  },
+
   openmenu:function(x,y) {
     if (this.refs.menu) {
       var menu=this.refs.menu.getDOMNode();
@@ -166,6 +173,9 @@ var docview = React.createClass({
       menu.style.left=x+'px';
       menu.style.top=(y-this.getDOMNode().offsetTop)+'px'; 
     }
+  },
+  makeSelection:function(start,end) {
+    this.onSelection(start,end-start);
   },
   onSelection:function(start,len,x,y,e) {
     this.setState({selstart:start,sellength:len,newMarkupAt:null});
@@ -186,10 +196,12 @@ var docview = React.createClass({
     if (this.props.onSelection) {  
       this.props.onSelection(start,len,x,y);
     } 
+    this.props.action("makingselection",start,start+len);
   },
   render: function() {
+    //console.log("docview render");
     return (
-      <div> 
+      <div className="docview"> 
       {this.contextMenu()}
        <surface ref="surface" page={this.props.page}
                 user={this.props.user}
