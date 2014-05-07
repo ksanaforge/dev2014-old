@@ -30,16 +30,16 @@
 
 
 
-.vertical { font-size:120%; -webkit-writing-mode: vertical-rl;font-family: "DFKai-SB";}
+.vertical { -webkit-writing-mode: vertical-rl; font-size:120%; font-family: "DFKai-SB";}
 .wh {
-	font-size:150%;
-	letter-spacing:0.33em;
+	font-size:140%;
+	letter-spacing:0.25em;
 	font-family:"ShuoWen";
 }
 
 .warichu {
     display: inline-table;
-    vertical-align: top;
+    vertical-align: middle;
     font-family:"微體正黑體";
 }
 .warichu-left, .warichu-right {

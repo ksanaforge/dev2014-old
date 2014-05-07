@@ -57,6 +57,7 @@ var surface = React.createClass({
     var s=range.startContainer.parentElement;
     var e=range.startContainer.parentElement;
     var n=e.nextSibling,nextstart=0;
+    if (!n) return null;           
     if (n.nodeName=="SPAN") {
       nextstart=parseInt(n.getAttribute('data-n'),10);  
     }
@@ -135,10 +136,10 @@ var surface = React.createClass({
         if (sel.start>=this.props.selstart && sel.start<=this.props.selstart+this.props.sellength) {
           sel.start=this.props.selstart;
           sel.len=this.props.sellength;
-        }
+        } 
       } else if (sel.start>0) {
         sel.len=1;
-      }
+      }   
       //reuse , don't change
     } else {
       //this.setState({selstart:sel.start,sellength:sel.len});
