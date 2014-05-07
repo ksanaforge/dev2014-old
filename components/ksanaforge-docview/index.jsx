@@ -210,7 +210,9 @@ var docview = React.createClass({
                 selstart={this.state.selstart} 
                 sellength={this.state.sellength}
                 onSelection={this.onSelection}
-                onTagSet={this.onTagSet}>
+                onTagSet={this.onTagSet}
+                preview={this.props.preview}
+                >
        </surface>
       </div>
     );

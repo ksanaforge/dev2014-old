@@ -1,11 +1,13 @@
 /** @jsx React.DOM */
 var token = React.createClass({
   render:function() {
-    var opts={ className:this.props.cls,'data-n':this.props.n}
+    var classname=this.props.cls?this.props.cls.trim():"";
+    var opts={ 'data-n':this.props.n}
     if (this.props.appendtext) opts['data-to']=this.props.appendtext;
+    if (classname) opts.className=classname;
     return React.DOM.span(opts,this.props.ch);
   } 
-});  
+});       
 var caret=require("./caret");  
 var surface = React.createClass({
   componentWillUpdate:function(nextProps,nextState) {
@@ -19,7 +21,7 @@ var surface = React.createClass({
     var inputbox=this.refs.inputbox.getDOMNode();
     var surfacerect=this.refs.surface.getDOMNode().getBoundingClientRect();
     inputbox.focus();
-  },
+  },        
   showinlinemenu:function() {
     if (!this.refs.inlinemenu) return;
     var mm=this.state.markup;
@@ -197,7 +199,9 @@ var surface = React.createClass({
   toXML : function(opts) {
     var page=this.props.page;
     if (!page) return [];
-    var res=this.props.template.tokenize(page.inscription)
+    var inscription=page.inscription;
+
+    var res=this.props.template.tokenize(inscription);
     var TK=res.tokens;
     var offsets=res.offsets;
     if (!TK || !TK.length) return [] ;
@@ -262,6 +266,9 @@ var surface = React.createClass({
     if (this.props.onTagSet) {
       this.props.onTagSet(Object.keys(tagset).sort(),this.state.uuid);
     }
+    if (this.props.preview && this.props.template.typeset) {
+      xml=this.props.template.typeset(xml);
+    }    
     return xml;
   },  
   render: function() {

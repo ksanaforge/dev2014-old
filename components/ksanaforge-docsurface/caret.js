@@ -51,7 +51,8 @@ var Create=function(_surface) {
       if (n.previousSibling) n=n.previousSibling;
       else break;
     }
-    return (n||n.previousSibling==null)?n:n.nextSibling;
+    if (!n) return null;
+    return (n.previousSibling==null)?n:n.nextSibling;
   }
 
   var endOfLine=function() {
