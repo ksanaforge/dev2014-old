@@ -11,7 +11,8 @@ var docview = React.createClass({
     var p=this.props,np=nextProps;
     var s=this.state,ns=nextState;
     return (p.page!=np.page || p.pageid!=np.pageid ||
-     s.selstart!=ns.selstart || s.sellength!=ns.sellength);
+     s.selstart!=ns.selstart || s.sellength!=ns.sellength
+     ||s.newMarkupAt!=ns.newMarkupAt);
   },
   componentWillUpdate:function(nextProps,nextState) {
 
@@ -143,10 +144,12 @@ var docview = React.createClass({
       this.inserttext(args[0],args[1],args[2]);
     } else if (action=="addmarkup") { 
       var payload=args[0];
+      var silent=args[1];
       payload.author=this.props.user.name;
       if (sl>maxlen) return;
       this.props.page.addMarkup(ss,sl,payload); 
-      this.setState({selstart:newstart,sellength:0,newMarkupAt:ss});
+      this.setState({selstart:newstart,sellength:0});
+      if (!silent) this.setState({newMarkupAt:ss});
     } else if (action=="addmarkupat") {
       var payload=args[2];
       payload.author=this.props.user.name;
