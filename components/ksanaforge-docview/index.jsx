@@ -138,7 +138,7 @@ var docview = React.createClass({
     if (action=="strikeout") {
       if (sl>maxlen) return;
       this.props.page.strikeout(ss,sl,username);
-      this.setState({selstart:newstart,sellength:0});
+      this.setState({selstart:newstart+1,sellength:0});
     } else if (action=="inserttext") {
       if (args[1]>maxlen) return;
       this.inserttext(args[0],args[1],args[2]);
