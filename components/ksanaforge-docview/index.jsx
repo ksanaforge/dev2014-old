@@ -144,6 +144,7 @@ var docview = React.createClass({
       this.inserttext(args[0],args[1],args[2]);
     } else if (action=="addmarkup") { 
       var payload=args[0];
+      payload.i=this.props.pageid;
       var silent=args[1];
       payload.author=this.props.user.name;
       if (sl>maxlen) return;
