@@ -7,7 +7,7 @@ var token = React.createClass({
     if (classname) opts.className=classname;
     return React.DOM.span(opts,this.props.ch);
   } 
-});       
+});   
 var caret=require("./caret");  
 var surface = React.createClass({
   componentWillUpdate:function(nextProps,nextState) {

@@ -1,7 +1,7 @@
 ﻿/** @jsx React.DOM */
 var bootstrap=Require('bootstrap');
 if (typeof $ =='undefined') $=Require('jquery');
-
+var contentpf="C_";
 var Tabui = React.createClass({
   getInitialState:function(){
     return { }
@@ -22,7 +22,7 @@ var Tabui = React.createClass({
   },
   tabcontent:function(T) {
     if (T.params) T.params.tab = T;
-    return <div ref={"C"+T.id} key={"C"+T.id} data-id={"C-"+T.id} 
+    return <div ref={contentpf+T.id} key={"C"+T.id} data-id={"C-"+T.id} 
     className={"tab-pane"}>{T.content(T.params)}</div>
   },
 
@@ -36,7 +36,7 @@ var Tabui = React.createClass({
       <div className="tab-content">
       { this.props.tabs.map(function(T){return tabcontent(T) }) }
       </div>
-    </div> 
+    </div>  
   );
   },
   clickTab:function(e) {
@@ -93,11 +93,23 @@ var Tabui = React.createClass({
     if (!tabexists) tabs.splice(idx,0,T);
     this.setState({"tabs":tabs});
   },
+  makeScrollable:function() {
+    var h=this.getDOMNode().offsetHeight;
+    var w=this.getDOMNode().offsetWidth;
+    for (var i in this.refs) {
+      if (i.substring(0,contentpf.length)!=contentpf)continue;
+      var t=this.refs[i].getDOMNode();
+      t.style.height=h;
+      t.style.width=w;
+      t.style.overflow="auto";
+    }
+  },
   componentDidMount:function() {
-    this.goActiveTab()
+    this.goActiveTab();
   },
   componentDidUpdate:function() {
-    this.goActiveTab()
+    this.makeScrollable();
+    this.goActiveTab();
   }
 });
 

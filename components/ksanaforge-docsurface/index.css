@@ -5,7 +5,11 @@
 *:focus {
     outline: none;
 }
-.surface {font-size:200%;-webkit-user-select:text;font-family: "微軟正黑體", "Microsoft JhengHei", "新細明體", "PMingLiU", "細明體", "MingLiU", "標楷體", "DFKai-sb", serif;}
+.surface {
+  font-size:200%;
+  -webkit-user-select:text;
+  width:95%;
+  font-family: "微軟正黑體", "Microsoft JhengHei", "新細明體", "PMingLiU", "細明體", "MingLiU", "標楷體", "DFKai-sb", serif;}
 .surface-caret-container {position:relative;width:3px;}
 .surface-inputbox {position:absolute;left:0;right:0;}
 .surface-caret {position:relative;background-color:midnightblue;height:120%;
