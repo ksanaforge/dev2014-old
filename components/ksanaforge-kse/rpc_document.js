@@ -14,7 +14,7 @@ api.openDocument=makeinf("openDocument");
 api.saveMarkup=makeinf("saveMarkup");
 api.saveDocument=makeinf("saveDocument");
 api.getUserSettings=makeinf("getUserSettings");
-
+api.login=makeinf("login");
 
 rpc.exec(function(err,data){
 	api.version=data;

@@ -71,6 +71,7 @@ var yase=function(){
         saveMarkup:makeinf('saveMarkup'),
         saveDocument:makeinf('saveDocument'),
         getUserSettings:makeinf('getUserSettings'),
+        login:makeinf('login'),
     };  
 
   } else {

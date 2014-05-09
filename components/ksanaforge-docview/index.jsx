@@ -153,6 +153,7 @@ var docview = React.createClass({
       if (!silent) this.setState({newMarkupAt:ss});
     } else if (action=="addmarkupat") {
       var payload=args[2];
+      var silent=args[3];
       payload.author=this.props.user.name;
       if (args[1]>maxlen) return;
       this.props.page.addMarkup(args[0],args[1],payload); 
@@ -169,7 +170,6 @@ var docview = React.createClass({
   closemenu:function() {
     this.refs.menu.getDOMNode().classList.remove("open");
   },
-
   openmenu:function(x,y) {
     if (this.refs.menu) {
       var menu=this.refs.menu.getDOMNode();

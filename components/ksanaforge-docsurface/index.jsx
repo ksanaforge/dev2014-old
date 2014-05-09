@@ -13,8 +13,8 @@ var surface = React.createClass({
   componentWillUpdate:function(nextProps,nextState) {
     if (nextProps.selstart!=this.props.selstart
       && nextProps.selstart!=this.props.selstart+this.props.sellength) {
-      nextState.markup=null;
-      this.inlinemenuopened=null;
+      //nextState.markup=null;
+      //this.inlinemenuopened=null;
     } 
   },
   moveInputBox:function(rect) {
@@ -85,7 +85,7 @@ var surface = React.createClass({
     for (var i=1;i<m.length;i++) {
       if (m[i].start==n) mm=m[i];
     }
-    
+    this.props.onSelection(mm.start,mm.len);
     var menu=this.props.template.inlinemenu[mm.payload.type];
     if (menu) {
       this.setState({markup:mm});
@@ -98,6 +98,7 @@ var surface = React.createClass({
     if (!e.target.attributes['data-n']) return;
     var n=e.target.attributes['data-n'].value;
     if (n) {
+
       this.openinlinemenu(n);
       return true;
     } else return false;
@@ -138,7 +139,7 @@ var surface = React.createClass({
           sel.len=this.props.sellength;
         } 
       } else if (sel.start>0) {
-        sel.len=1;
+        sel.len=1; //it will expand to whole token
       }   
       //reuse , don't change
     } else {
