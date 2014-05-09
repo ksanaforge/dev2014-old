@@ -119,7 +119,7 @@ gulp.task('newapp',function(){
   console.log('gulp')
 });
 
-gulp.task('debug',function(){
+gulp.task('qunit',function(){
 	var argv = require('minimist')(process.argv.slice(2));
 	var name = argv['js'];
 	var filename=process.cwd()+require('path').sep+name;
@@ -130,7 +130,7 @@ gulp.task('debug',function(){
 		spawn('qunit.cmd',[filename]);	
 	} else {
 		console.log('cannot find debuggee, syntax: ');
-		console.log('gulp debug --js=debuggee.js');
+		console.log('gulp qunit --js=debuggee.js');
 	}
 	
 })
