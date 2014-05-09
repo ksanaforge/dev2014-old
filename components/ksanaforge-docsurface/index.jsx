@@ -55,18 +55,17 @@ var surface = React.createClass({
     if (!sel.rangeCount) return;
     var range = sel.getRangeAt(0);    
     var s=range.startContainer.parentElement;
-    var e=range.startContainer.parentElement;
+    var e=range.endContainer.parentElement;
     var n=e.nextSibling,nextstart=0;
     if (!n) return null;           
     if (n.nodeName=="SPAN") {
       nextstart=parseInt(n.getAttribute('data-n'),10);  
     }
-    var selectionlength=sel.extentOffset-sel.anchorOffset;
-    if (start==end && start+selectionlength==nextstart) {//select a token
-      length=1;
+    var selectionlength=end-start+sel.extentOffset-sel.anchorOffset;
+    if (start+selectionlength==nextstart) {//select till end of last token
+      length=selectionlength;
     } else {
       length=end-start;
-      if (length) length++;
       //if (range.endOffset>range.startOffset &&!length) length=1;
       if (length<0) {
           temp=end; end=start; start=end;

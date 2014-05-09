@@ -15,7 +15,6 @@ var docview = React.createClass({
      ||s.newMarkupAt!=ns.newMarkupAt);
   },
   componentWillUpdate:function(nextProps,nextState) {
-
     if (nextProps.page!=this.props.page) {
       nextState.selstart=0;
       nextState.sellength=0;
@@ -64,16 +63,25 @@ var docview = React.createClass({
     var M=this.props.page.markupAt(offset);
     return this.getMarkups(M,offset);
   },  
+  getSelectedText:function(s,l) {
+    if (!this.props.page || !this.props.page.inscription) return "";
+    s=s||this.state.selstart;
+    l=l||this.state.sellength;
+
+    return this.props.page.inscription.substr(s,l);
+  },
   contextMenu:function() {
     if (this.props.template.contextmenu) {
+      var text=this.getSelectedText();
       return this.props.template.contextmenu(
-        {ref:"menu",user:this.props.user, action:this.onAction}
+        {ref:"menu",user:this.props.user, action:this.onAction, 
+        selstart:this.state.selstart,sellength:this.state.sellength,
+        text:this.getSelectedText()}
       );  
     } else {
       return <span></span>
     }    
   },
-
   onTagSet:function(tagset,uuid) {
     if (!tagset || !tagset.length)return;
     if (JSON.stringify(this.tagset)!=JSON.stringify(tagset)) {
@@ -81,13 +89,11 @@ var docview = React.createClass({
       cssgen.applyStyles(this.props.styles,tagset,"div[data-id='"+uuid+"'] ");
     }
   },
-
   inserttext:function(start,len,text) {
     var payload={type:"suggest",
                   author:this.props.user.name,
                   text:text,insert:true
                 };
-
     this.props.page.clearMarkups(start,len,this.props.user.name);
     this.props.page.addMarkup(start,len,payload);
 
@@ -186,7 +192,7 @@ var docview = React.createClass({
     if (this.refs.menu && this.refs.menu.onPopup) {
       if (len && e && e.button==2) {
         var context={
-          text:this.props.page.inscription.substr(start,len),
+          text:this.getSelectedText(start,len),
           selstart:start,
           sellength:len
         }
